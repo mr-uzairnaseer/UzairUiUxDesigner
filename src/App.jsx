@@ -1,105 +1,110 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Github, Mail, Phone, Home, LayoutGrid, Sparkles, ArrowUpRight,
-  MessageCircle, GraduationCap, X, ChevronLeft, ChevronRight, Lock
+  WebGLRenderer,
+  Scene,
+  PerspectiveCamera,
+  IcosahedronGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  BufferGeometry,
+  BufferAttribute,
+  PointsMaterial,
+  Points,
+} from "three";
+import {
+  Github, Mail, Phone, GraduationCap, X,
+  ChevronLeft, ChevronRight, Lock, Menu, ArrowUpRight, MessageCircle
 } from "lucide-react";
 
-/**
- * Dynamic loading of screenshot assets per project folder
- */
-const globModules = import.meta.glob('/src/assets/projects/*/*.{png,jpg,jpeg,webp}', { eager: true });
+/* ─── Asset loading ────────────────────────────────────────────────────────── */
+const globModules = import.meta.glob(
+  "/src/assets/projects/*/*.{png,jpg,jpeg,webp}",
+  { eager: true }
+);
 
 const slugMap = {
-  "letschat": "lets-chat",
-  "ideacatalyst": "idea-catalyst",
-  "foodies": "foodies",
-  "expensify": "expensify",
-  "taskmate": "taskmate",
-  "shopease": "shopease"
+  letschat: "lets-chat",
+  ideacatalyst: "idea-catalyst",
+  foodies: "foodies",
+  expensify: "expensify",
+  taskmate: "taskmate",
+  shopease: "shopease",
 };
 
 const projectImages = {};
-
 Object.entries(globModules).forEach(([path, mod]) => {
-  const parts = path.split('/');
-  const projectsIdx = parts.indexOf('projects');
-  if (projectsIdx !== -1 && parts[projectsIdx + 1]) {
-    const rawFolder = parts[projectsIdx + 1];
-    const slug = slugMap[rawFolder] || rawFolder;
-    const url = typeof mod === 'string' ? mod : (mod?.default || mod);
-    
-    if (!projectImages[slug]) {
-      projectImages[slug] = [];
-    }
+  const parts = path.split("/");
+  const idx = parts.indexOf("projects");
+  if (idx !== -1 && parts[idx + 1]) {
+    const raw = parts[idx + 1];
+    const slug = slugMap[raw] || raw;
+    const url = typeof mod === "string" ? mod : mod?.default || mod;
+    if (!projectImages[slug]) projectImages[slug] = [];
     projectImages[slug].push({ path, url });
   }
 });
-
 Object.keys(projectImages).forEach((slug) => {
-  projectImages[slug].sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
-  projectImages[slug] = projectImages[slug].map((item) => item.url);
+  projectImages[slug].sort((a, b) =>
+    a.path.localeCompare(b.path, undefined, { numeric: true })
+  );
+  projectImages[slug] = projectImages[slug].map((i) => i.url);
 });
 
+/* ─── Data ─────────────────────────────────────────────────────────────────── */
 const PROJECTS = [
   {
     slug: "lets-chat",
     name: "Let's Chat",
-    years: "Jan – Mar 2026",
-    desc: "A fully functional, WhatsApp-style messaging app with real-time chat, communities, and voice/video call UI — backed by Firebase.",
+    years: "Jan to Mar 2026",
+    desc: "A fully functional, WhatsApp style messaging app with real time chat, communities, and voice/video call UI backed by Firebase.",
     tags: ["Flutter", "Firebase", "Realtime DB"],
     link: "https://github.com/aimahbilal1/Lets-chat",
-    hue: "coral",
     images: projectImages["lets-chat"] || projectImages["letschat"] || [],
   },
   {
     slug: "foodies",
     name: "Foodies",
     years: "2026",
-    desc: "Complete food delivery frontend — onboarding, home feed, categories, cart, checkout, and order tracking, with smooth animations throughout.",
+    desc: "Complete food delivery frontend including onboarding, home feed, categories, cart, checkout, and order tracking, with smooth animations throughout.",
     tags: ["Flutter", "Dart"],
     link: "https://github.com/aimahbilal1/Foodies-App",
-    hue: "lime",
     images: projectImages["foodies"] || [],
   },
   {
     slug: "expensify",
     name: "Expensify",
     years: "2026",
-    desc: "A premium, dark-themed expense tracker with spending analytics, savings plans, category breakdowns, and multi-account management.",
+    desc: "A premium, dark themed expense tracker with spending analytics, savings plans, category breakdowns, and multi account management.",
     tags: ["Flutter", "Dart", "Charts"],
     link: "https://github.com/aimahbilal1/Expensify",
-    hue: "indigo",
     images: projectImages["expensify"] || [],
   },
   {
     slug: "taskmate",
     name: "TaskMate",
     years: "2026 · Freelance",
-    desc: "20+ screen Figma system for an on-demand home services platform — booking flow, provider profiles, chat, ratings, and order management.",
+    desc: "20+ screen Figma system for an on demand home services platform featuring booking flow, provider profiles, chat, ratings, and order management.",
     tags: ["Figma", "Design System"],
     link: null,
-    hue: "coral",
     images: projectImages["taskmate"] || [],
   },
   {
     slug: "shopease",
     name: "ShopEase & SellerEase",
-    years: "Apr – Jun 2025",
-    desc: "Dual-role e-commerce app: product browsing, cart, and order management for buyers, plus a dedicated admin inventory panel for sellers.",
+    years: "Apr to Jun 2025",
+    desc: "Dual role e-commerce app: product browsing, cart, and order management for buyers, plus a dedicated admin inventory panel for sellers.",
     tags: ["Flutter", "Firebase", "Supabase"],
     link: "https://github.com/igmoiiz/Shop-Ease-Full_Stack",
-    hue: "lime",
     images: projectImages["shopease"] || [],
   },
   {
     slug: "idea-catalyst",
     name: "Idea Catalyst",
-    years: "Nov 2025 – Jan 2026",
-    desc: "A startup idea generator with user/admin roles and analytics-based outputs, deployed live as a primary portfolio demo of frontend skill.",
+    years: "Nov 2025 to Jan 2026",
+    desc: "A startup idea generator with user/admin roles and analytics based outputs, deployed live as a primary portfolio demo of frontend skill.",
     tags: ["React", "JavaScript"],
     link: "https://github.com/igmoiiz/IdeaCatalyst---Backend",
     liveLink: "https://idea-catalyst.netlify.app/",
-    hue: "indigo",
     images: projectImages["idea-catalyst"] || projectImages["ideacatalyst"] || [],
   },
   {
@@ -107,21 +112,19 @@ const PROJECTS = [
     name: "ORIC Database Portal",
     years: "2026 · TCCI Internship",
     confidential: true,
-    desc: "Designed and developed the frontend experience for a centralized ORIC platform covering research, projects, publications, innovation, commercialization, startups, and laboratories. Built role-based dashboards and authentication flows using React/Next.js while translating high-fidelity Figma designs into responsive interfaces.",
+    desc: "Designed and developed the frontend experience for a centralized ORIC platform covering research, projects, publications, innovation, commercialization, startups, and laboratories. Built role based dashboards and authentication flows using React/Next.js while translating high fidelity Figma designs into responsive interfaces.",
     tags: ["UI/UX", "Frontend", "React", "Next.js", "Figma", "TypeScript"],
     link: null,
-    hue: "indigo",
     images: [],
   },
   {
     slug: "tcci-live",
-    name: "TCCI Live — News & Streaming Platform",
+    name: "TCCI Live News & Streaming Platform",
     years: "2026 · TCCI Internship",
     confidential: true,
-    desc: "Designed and developed frontend interfaces for a TCCI-focused platform featuring news, webinars, and live-streaming content. Focused on clean content discovery, responsive layouts, and consistency with the TCCI brand.",
+    desc: "Designed and developed frontend interfaces for a TCCI focused platform featuring news, webinars, and live streaming content. Focused on clean content discovery, responsive layouts, and consistency with the TCCI brand.",
     tags: ["UI/UX", "Frontend", "React", "Responsive Design"],
     link: null,
-    hue: "coral",
     images: [],
   },
   {
@@ -129,10 +132,9 @@ const PROJECTS = [
     name: "TCCI Laboratory Platform",
     years: "2026 · TCCI Internship",
     confidential: true,
-    desc: "Contributed to the frontend development of a platform for organizing and presenting university laboratories — their capabilities and activities within the TCCI ecosystem. Designed UI components, translated design concepts into functional interfaces, and collaborated with another intern to maintain UI consistency across the build.",
+    desc: "Contributed to the frontend development of a platform for organizing and presenting university laboratories and their capabilities within the TCCI ecosystem. Designed UI components, translated design concepts into functional interfaces, and collaborated with another intern to maintain UI consistency across the build.",
     tags: ["UI/UX", "Figma", "React", "Frontend"],
     link: null,
-    hue: "lime",
     images: [],
   },
 ];
@@ -147,24 +149,543 @@ const SKILLS = [
   { label: "Core Concepts", items: ["OOP", "Data Structures", "API Integration", "REST APIs"] },
 ];
 
-const NAV = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "work", label: "Work", icon: LayoutGrid },
-  { id: "skills", label: "Skills", icon: Sparkles },
-  { id: "contact", label: "Contact", icon: MessageCircle },
+const TOP_NAV = [
+  { id: "about",      label: "About" },
+  { id: "why",        label: "Why Me" },
+  { id: "craft",      label: "Craft" },
+  { id: "work",       label: "Work" },
+  { id: "skills",     label: "Skills" },
+  { id: "experience", label: "Experience" },
+  { id: "contact",    label: "Contact" },
 ];
 
+const WHY_ITEMS = [
+  {
+    title: "Design + Development",
+    desc: "I understand both sides of the product, from user flows and high fidelity UI designs in Figma to implementing responsive interfaces with modern frontend technologies.",
+  },
+  {
+    title: "Real World Experience",
+    desc: "Through my TCCI internship, I contributed to production oriented digital platforms and worked with complex requirements, dashboards, role based interfaces, and database driven systems.",
+  },
+  {
+    title: "Problem Solver",
+    desc: "I enjoy breaking down complex requirements into clear user flows, organized information architectures, and practical interface solutions.",
+  },
+  {
+    title: "Collaborative Mindset",
+    desc: "I've worked with developers, supervisors, and other interns using collaborative workflows and Git/GitHub to refine and implement digital products.",
+  },
+  {
+    title: "Always Learning",
+    desc: "I'm continuously improving my design and development skills and enjoy working on products where I can learn, contribute, and create meaningful user experiences.",
+  },
+];
+
+function getTerminalPath(name, slug) {
+  if (slug) return `~/projects/${slug}`;
+  return `~/projects/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+}
+
+/* ─── Scroll reveal hook ────────────────────────────────────────────────────── */
+function useScrollReveal(threshold = 0.1) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setVisible(true); obs.disconnect(); }
+      },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, visible];
+}
+
+/* ─── Three.js hero canvas ──────────────────────────────────────────────────── */
+function HeroCanvas({ reduceMotion }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(55, 1, 0.1, 100);
+    camera.position.z = 6;
+
+    /* Wireframe icosahedron */
+    const icoGeo = new IcosahedronGeometry(2.2, 1);
+    const icoMat = new MeshBasicMaterial({
+      color: 0xC0440A,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.12,
+    });
+    const ico = new Mesh(icoGeo, icoMat);
+    scene.add(ico);
+
+    /* Ember particle cloud */
+    const COUNT = 420;
+    const pos = new Float32Array(COUNT * 3);
+    const sizes = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) {
+      const r = 2.8 + Math.random() * 1.6;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      pos[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      pos[i * 3 + 2] = r * Math.cos(phi);
+      sizes[i] = Math.random();
+    }
+    const ptGeo = new BufferGeometry();
+    ptGeo.setAttribute("position", new BufferAttribute(pos, 3));
+    const ptMat = new PointsMaterial({
+      color: 0xC0440A,
+      size: 0.026,
+      transparent: true,
+      opacity: 0.45,
+      sizeAttenuation: true,
+    });
+    const points = new Points(ptGeo, ptMat);
+    scene.add(points);
+
+    /* Second ring of faint paper particles */
+    const pos2 = new Float32Array(240 * 3);
+    for (let i = 0; i < 240; i++) {
+      pos2[i * 3]     = (Math.random() - 0.5) * 12;
+      pos2[i * 3 + 1] = (Math.random() - 0.5) * 12;
+      pos2[i * 3 + 2] = (Math.random() - 0.5) * 6;
+    }
+    const ptGeo2 = new BufferGeometry();
+    ptGeo2.setAttribute("position", new BufferAttribute(pos2, 3));
+    const ptMat2 = new PointsMaterial({
+      color: 0x8B6E4E,
+      size: 0.015,
+      transparent: true,
+      opacity: 0.35,
+    });
+    const points2 = new Points(ptGeo2, ptMat2);
+    scene.add(points2);
+
+    let mx = 0, my = 0;
+    const onMouse = (e) => {
+      mx = (e.clientX / window.innerWidth - 0.5) * 2;
+      my = -(e.clientY / window.innerHeight - 0.5) * 2;
+    };
+    window.addEventListener("mousemove", onMouse);
+
+    /* Scroll driven Three.js animation tracking */
+    let targetScroll = 0;
+    let currentScroll = 0;
+    const onScroll = () => {
+      targetScroll = window.scrollY;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const resize = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    let t = 0, raf;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      t += 0.004;
+
+      // Smooth scroll interpolation (60fps lerp)
+      currentScroll += (targetScroll - currentScroll) * 0.075;
+
+      // Icosahedron scroll tumble & drift
+      ico.rotation.x = t * 0.28 + my * 0.08 + currentScroll * 0.0022;
+      ico.rotation.y = t * 0.42 + mx * 0.08 + currentScroll * 0.0032;
+      ico.rotation.z = currentScroll * 0.0012;
+      ico.position.y = -currentScroll * 0.0022;
+      ico.position.x = Math.sin(currentScroll * 0.001) * 0.8;
+
+      // Ember particles orbital scroll dispersion
+      points.rotation.y = t * 0.09 + currentScroll * 0.0016;
+      points.rotation.x = t * 0.04 + currentScroll * 0.001;
+      points.position.y = -currentScroll * 0.0018;
+      points.position.z = Math.sin(currentScroll * 0.0008) * 2.0;
+
+      // Faint field counter-rotation
+      points2.rotation.y = -t * 0.05 - currentScroll * 0.0009;
+      points2.rotation.x = currentScroll * 0.0005;
+      points2.position.y = -currentScroll * 0.0012;
+
+      // Scroll-linked camera dolly
+      camera.position.z = 6 + Math.sin(currentScroll * 0.0006) * 1.1;
+      camera.position.y = -currentScroll * 0.0008;
+
+      renderer.render(scene, camera);
+    };
+    tick();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMouse);
+      window.removeEventListener("scroll", onScroll);
+      ro.disconnect();
+      renderer.dispose();
+      icoGeo.dispose(); icoMat.dispose();
+      ptGeo.dispose(); ptMat.dispose();
+      ptGeo2.dispose(); ptMat2.dispose();
+    };
+  }, [reduceMotion]);
+
+  return <canvas ref={canvasRef} className="ap-hero-canvas" aria-hidden="true" />;
+}
+
+/* ─── Custom cursor ─────────────────────────────────────────────────────────── */
+function CustomCursor() {
+  const dotRef = useRef(null);
+  const ringRef = useRef(null);
+
+  useEffect(() => {
+    const isFine = window.matchMedia("(pointer: fine)").matches;
+    if (!isFine) return;
+    document.documentElement.classList.add("has-custom-cursor");
+
+    let x = -100, y = -100, rx = -100, ry = -100, raf;
+    let hovered = false;
+
+    const onMove = (e) => { x = e.clientX; y = e.clientY; };
+    window.addEventListener("mousemove", onMove);
+
+    const onEnter = () => { hovered = true; };
+    const onLeave = () => { hovered = false; };
+    const bindHover = () => {
+      document.querySelectorAll("a, button, [role='button']").forEach((el) => {
+        el.addEventListener("mouseenter", onEnter);
+        el.addEventListener("mouseleave", onLeave);
+      });
+    };
+    bindHover();
+
+    const loop = () => {
+      raf = requestAnimationFrame(loop);
+      rx += (x - rx) * 0.14;
+      ry += (y - ry) * 0.14;
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate(${x - 3}px, ${y - 3}px)`;
+      }
+      if (ringRef.current) {
+        const s = hovered ? 1.7 : 1;
+        ringRef.current.style.transform = `translate(${rx - 16}px, ${ry - 16}px) scale(${s})`;
+      }
+    };
+    loop();
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+      document.documentElement.classList.remove("has-custom-cursor");
+    };
+  }, []);
+
+  return (
+    <>
+      <div ref={dotRef} className="cur-dot" aria-hidden="true" />
+      <div ref={ringRef} className="cur-ring" aria-hidden="true" />
+    </>
+  );
+}
+
+/* ─── Craft section ─────────────────────────────────────────────────────────── */
+function CraftSection({ reduceMotion }) {
+  // Lab 1: Magnetic Physics
+  const [magCoords, setMagCoords] = useState({ dx: 0, dy: 0, active: false, clicks: 0 });
+  const magBtnRef = useRef(null);
+
+  const handleMagMove = (e) => {
+    if (reduceMotion || !window.matchMedia("(pointer: fine)").matches) return;
+    const btn = magBtnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = Math.round((e.clientX - cx) * 0.45);
+    const dy = Math.round((e.clientY - cy) * 0.45);
+    btn.style.transform = `translate(${dx}px, ${dy}px)`;
+    setMagCoords((prev) => ({ ...prev, dx, dy, active: true }));
+  };
+
+  const handleMagLeave = () => {
+    if (magBtnRef.current) magBtnRef.current.style.transform = "translate(0,0)";
+    setMagCoords((prev) => ({ ...prev, dx: 0, dy: 0, active: false }));
+  };
+
+  // Lab 2: Live Token & Swatch Engine
+  const [swatchAngle, setSwatchAngle] = useState(135);
+  const [swatchHue, setSwatchHue] = useState(14); // default ember ~ #FF4A2E
+  const presets = [
+    { label: "Ember", hue: 14 },
+    { label: "Flame", hue: 28 },
+    { label: "Citrus", hue: 42 },
+    { label: "Coral", hue: 350 },
+  ];
+
+  // Lab 3: 3D Matrix Card with Glare
+  const [flipped, setFlipped] = useState(false);
+  const [cardTilt, setCardTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
+  const cardRef = useRef(null);
+
+  const handleCardMove = (e) => {
+    if (reduceMotion || flipped) return;
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    setCardTilt({
+      x: (py - 0.5) * -18,
+      y: (px - 0.5) * 22,
+      glareX: Math.round(px * 100),
+      glareY: Math.round(py * 100),
+    });
+  };
+  const handleCardLeave = () => {
+    setCardTilt({ x: 0, y: 0, glareX: 50, glareY: 50 });
+  };
+
+  // Lab 4: Live Command Filter Matrix
+  const [filterTag, setFilterTag] = useState("All");
+  const [filterQuery, setFilterQuery] = useState("");
+  const craftTags = [
+    { name: "Auth Flows", cat: "Security", count: 4 },
+    { name: "Dashboards", cat: "Analytics", count: 7 },
+    { name: "Micro Animations", cat: "Motion", count: 12 },
+    { name: "WebGL 3D", cat: "Graphics", count: 3 },
+    { name: "State Stores", cat: "Architecture", count: 8 },
+  ];
+  const activeTags = craftTags.filter((t) => {
+    const matchCat = filterTag === "All" || t.cat === filterTag;
+    const matchQ = t.name.toLowerCase().includes(filterQuery.toLowerCase());
+    return matchCat && matchQ;
+  });
+
+  return (
+    <section id="craft" className="ap-section">
+      <div className="ap-wrap">
+        <div className="ap-section-head">
+          <div className="ap-eyebrow">
+            <span className="ap-eyebrow-num">03</span> craft
+          </div>
+          <h2 className="ap-h2">Interfaces I like building.</h2>
+          <p className="ap-section-sub">
+            Interactive micro-systems built to demonstrate state architecture, 3D transformations, physics, and token calculations.
+          </p>
+        </div>
+
+        <div className="ap-craft-grid">
+          {/* Lab 1: Magnetic Physics */}
+          <div
+            className="ap-craft-card"
+            onMouseMove={handleMagMove}
+            onMouseLeave={handleMagLeave}
+          >
+            <div className="ap-craft-header-bar">
+              <span className="ap-craft-badge">Physics</span>
+              <span className="ap-craft-telemetry">
+                {magCoords.active
+                  ? `dx: ${magCoords.dx > 0 ? "+" : ""}${magCoords.dx}px · dy: ${magCoords.dy > 0 ? "+" : ""}${magCoords.dy}px`
+                  : "idle · move cursor near button"}
+              </span>
+            </div>
+            <div className="ap-craft-stage">
+              <button
+                ref={magBtnRef}
+                type="button"
+                className="ap-mag-btn"
+                onClick={() => setMagCoords((prev) => ({ ...prev, clicks: prev.clicks + 1 }))}
+              >
+                <span>Hover &amp; Drag Pull</span>
+                <span className="ap-mag-pill-tag">
+                  {magCoords.clicks > 0 ? `${magCoords.clicks} clicks` : "✦ physics"}
+                </span>
+              </button>
+            </div>
+            <div className="ap-craft-caption">
+              <b>01. Magnetic Physics</b> · Cursor distance-aware velocity translation with elastic spring return.
+            </div>
+          </div>
+
+          {/* Lab 2: Live Token Swatch Engine */}
+          <div className="ap-craft-card">
+            <div className="ap-craft-header-bar">
+              <span className="ap-craft-badge">Token Engine</span>
+              <span className="ap-craft-telemetry">
+                HSL({swatchHue}, 100%, 59%) · {swatchAngle}°
+              </span>
+            </div>
+            <div className="ap-craft-stage ap-craft-stage-column">
+              <div
+                className="ap-swatch-box"
+                style={{
+                  background: `hsl(${swatchHue}, 100%, 59%)`,
+                  transform: `rotate(${swatchAngle * 0.15}deg)`,
+                  boxShadow: `0 12px 32px hsla(${swatchHue}, 100%, 50%, 0.28)`,
+                }}
+              >
+                <span className="ap-swatch-label">
+                  Dynamic Palette HSL({swatchHue}°)
+                </span>
+              </div>
+              <div className="ap-swatch-controls">
+                <input
+                  type="range"
+                  min="0"
+                  max="360"
+                  value={swatchAngle}
+                  onChange={(e) => setSwatchAngle(Number(e.target.value))}
+                  className="ap-craft-slider"
+                  aria-label="Adjust swatch angle"
+                />
+                <div className="ap-preset-pills">
+                  {presets.map((p) => (
+                    <button
+                      key={p.label}
+                      type="button"
+                      className={`ap-preset-pill ${swatchHue === p.hue ? "active" : ""}`}
+                      onClick={() => {
+                        setSwatchHue(p.hue);
+                        setSwatchAngle(p.hue * 4);
+                      }}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="ap-craft-caption">
+              <b>02. Dynamic Color Tokens</b> · Real time CSS variable calculation with live contrast and angle interpolation.
+            </div>
+          </div>
+
+          {/* Lab 3: 3D Matrix Card */}
+          <div
+            className="ap-craft-card"
+            ref={cardRef}
+            onMouseMove={handleCardMove}
+            onMouseLeave={handleCardLeave}
+          >
+            <div className="ap-craft-header-bar">
+              <span className="ap-craft-badge">3D Matrix</span>
+              <span className="ap-craft-telemetry">
+                {flipped ? "Code Inspector view" : `rotX: ${Math.round(cardTilt.x)}° · rotY: ${Math.round(cardTilt.y)}°`}
+              </span>
+            </div>
+            <div className="ap-craft-stage">
+              <div
+                className={`ap-flip-card ${flipped ? "flipped" : ""}`}
+                style={{
+                  transform: flipped
+                    ? "rotateY(180deg)"
+                    : `perspective(600px) rotateX(${cardTilt.x}deg) rotateY(${cardTilt.y}deg)`,
+                }}
+                onClick={() => setFlipped(!flipped)}
+              >
+                <div className="ap-flip-inner">
+                  <div
+                    className="ap-flip-front"
+                    style={{
+                      background: `radial-gradient(circle at ${cardTilt.glareX}% ${cardTilt.glareY}%, rgba(255,255,255,0.09), transparent 60%), #181818`,
+                    }}
+                  >
+                    <span className="ap-flip-title">Interactive 3D Glass Layer</span>
+                    <span className="ap-flip-sub">Click to flip &amp; inspect CSS tokens</span>
+                  </div>
+                  <div className="ap-flip-back">
+                    <code>transform: rotateX({Math.round(cardTilt.x)}deg) rotateY({Math.round(cardTilt.y)}deg);</code>
+                    <span className="ap-flip-back-hint">Click to return to front</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="ap-craft-caption">
+              <b>03. Pure CSS 3D Matrix</b> · Specular glare reflection mapped to cursor coordinates with seamless 180° flip.
+            </div>
+          </div>
+
+          {/* Lab 4: Live Command Filter Matrix */}
+          <div className="ap-craft-card">
+            <div className="ap-craft-header-bar">
+              <span className="ap-craft-badge">State Matrix</span>
+              <span className="ap-craft-telemetry">{activeTags.length} active nodes</span>
+            </div>
+            <div className="ap-craft-stage ap-craft-stage-column">
+              <div className="ap-craft-filter-bar">
+                <input
+                  type="text"
+                  placeholder="Filter interfaces (e.g. auth, webgl)..."
+                  value={filterQuery}
+                  onChange={(e) => setFilterQuery(e.target.value)}
+                  className="ap-craft-mini-input"
+                />
+                <div className="ap-filter-cat-row">
+                  {["All", "Security", "Analytics", "Motion", "Graphics", "Architecture"].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`ap-filter-cat-btn ${filterTag === cat ? "active" : ""}`}
+                      onClick={() => setFilterTag(cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="ap-craft-chips-grid">
+                {activeTags.length > 0 ? (
+                  activeTags.map((t) => (
+                    <span key={t.name} className="ap-craft-chip">
+                      <span className="ap-chip-dot" />
+                      {t.name}
+                      <small>{t.count}</small>
+                    </span>
+                  ))
+                ) : (
+                  <span className="ap-craft-empty">No components match "{filterQuery}"</span>
+                )}
+              </div>
+            </div>
+            <div className="ap-craft-caption">
+              <b>04. Reactive State Matrix</b> · Instantaneous multi predicate filtering and dynamic layout reflow.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Project card ──────────────────────────────────────────────────────────── */
 function ProjectCard({ project, onOpenLightbox }) {
   const [activeIdx, setActiveIdx] = useState(0);
   const images = project.images || [];
 
   return (
-    <article className={`ap-card hue-${project.hue}`}>
+    <article className="ap-card">
       <div className="ap-shot">
         {project.confidential ? (
           <div className="ap-shot-placeholder">
-            <Lock size={18} style={{ marginBottom: 6, color: "var(--muted)" }} />
-            <span>Client work — visuals confidential</span>
+            <Lock size={16} style={{ marginBottom: 8, color: "var(--gray-2)" }} />
+            <span>Client work with visuals confidential</span>
           </div>
         ) : images.length > 0 ? (
           <>
@@ -175,9 +696,7 @@ function ProjectCard({ project, onOpenLightbox }) {
               onClick={() => onOpenLightbox(images, activeIdx, project.name)}
             />
             {images.length > 1 && (
-              <span className="ap-shot-badge">
-                {activeIdx + 1} / {images.length}
-              </span>
+              <span className="ap-shot-badge">{activeIdx + 1}/{images.length}</span>
             )}
             {images.length > 1 && (
               <div className="ap-shot-nav" onClick={(e) => e.stopPropagation()}>
@@ -217,7 +736,14 @@ function ProjectCard({ project, onOpenLightbox }) {
           </div>
         )}
       </div>
+
       <div className="ap-card-body">
+        <div className="ap-card-meta-row">
+          <span className="ap-card-path">{getTerminalPath(project.name, project.slug)}</span>
+          <span className={`ap-card-badge ${project.confidential ? "is-client" : ""}`}>
+            {project.confidential ? "Client Work" : "Completed"}
+          </span>
+        </div>
         <div className="ap-card-top">
           <h3>{project.name}</h3>
           <span className="ap-years">{project.years}</span>
@@ -230,12 +756,12 @@ function ProjectCard({ project, onOpenLightbox }) {
           <div className="ap-link-row">
             {project.link && (
               <a className="ap-link" href={project.link} target="_blank" rel="noopener noreferrer">
-                View on GitHub <ArrowUpRight size={14} />
+                View on GitHub <ArrowUpRight size={13} />
               </a>
             )}
             {project.liveLink && (
               <a className="ap-link" href={project.liveLink} target="_blank" rel="noopener noreferrer">
-                Live Site <ArrowUpRight size={14} />
+                Live Site <ArrowUpRight size={13} />
               </a>
             )}
           </div>
@@ -245,73 +771,49 @@ function ProjectCard({ project, onOpenLightbox }) {
   );
 }
 
+/* ─── App ───────────────────────────────────────────────────────────────────── */
 export default function App() {
-  const [active, setActive] = useState("home");
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [lightbox, setLightbox] = useState(null); // { images, index, name }
-  const heroRef = useRef(null);
-  const spotRef = useRef(null);
-  const meshRef = useRef(null);
+  const [active, setActive]       = useState("home");
+  const [tilt, setTilt]           = useState({ x: 0, y: 0 });
+  const [lightbox, setLightbox]   = useState(null);
+  const [cName, setCName]         = useState("");
+  const [cMsg, setCMsg]           = useState("");
+  const [menuOpen, setMenuOpen]   = useState(false);
+
+  const heroRef      = useRef(null);
   const reduceMotion = useRef(false);
+
+  const handleGmail = () => {
+    const sub  = encodeURIComponent("Portfolio contact");
+    const body = encodeURIComponent(`Hi Aimah,\n\nName: ${cName}\n\n${cMsg}`);
+    window.location.href = `mailto:aimahbilal1@gmail.com?subject=${sub}&body=${body}`;
+  };
+  const handleWhatsApp = () => {
+    const t = cName || cMsg ? `Hi Aimah, I'm ${cName}. ${cMsg}` : "Hi Aimah, I'd like to get in touch!";
+    window.open(`https://wa.me/923127108644?text=${encodeURIComponent(t)}`, "_blank");
+  };
 
   useEffect(() => {
     reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }, []);
 
-  // keyboard handler for lightbox
+  /* Lightbox keyboard */
   useEffect(() => {
     if (!lightbox) return;
-    const handleKeyDown = (e) => {
+    const onKey = (e) => {
       if (e.key === "Escape") setLightbox(null);
-      if (e.key === "ArrowLeft" && lightbox.images.length > 1) {
-        setLightbox((prev) => ({
-          ...prev,
-          index: (prev.index - 1 + prev.images.length) % prev.images.length,
-        }));
-      }
-      if (e.key === "ArrowRight" && lightbox.images.length > 1) {
-        setLightbox((prev) => ({
-          ...prev,
-          index: (prev.index + 1) % prev.images.length,
-        }));
-      }
+      if (e.key === "ArrowLeft" && lightbox.images.length > 1)
+        setLightbox((p) => ({ ...p, index: (p.index - 1 + p.images.length) % p.images.length }));
+      if (e.key === "ArrowRight" && lightbox.images.length > 1)
+        setLightbox((p) => ({ ...p, index: (p.index + 1) % p.images.length }));
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [lightbox]);
 
-  const openLightbox = (images, index, name) => {
-    setLightbox({ images, index, name });
-  };
+  const openLightbox = (images, index, name) => setLightbox({ images, index, name });
 
-  // cursor spotlight, desktop only, respects reduced motion
-  useEffect(() => {
-    if (reduceMotion.current) return;
-    const isFine = window.matchMedia("(pointer: fine)").matches;
-    if (!isFine) return;
-    const onMove = (e) => {
-      if (spotRef.current) {
-        spotRef.current.style.setProperty("--mx", `${e.clientX}px`);
-        spotRef.current.style.setProperty("--my", `${e.clientY}px`);
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
-  }, []);
-
-  // soft parallax on mesh blobs on scroll, respecting reduced motion
-  useEffect(() => {
-    if (reduceMotion.current) return;
-    const onScroll = () => {
-      if (meshRef.current) {
-        meshRef.current.style.transform = `translateY(${window.scrollY * 0.12}px)`;
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // phone tilt on hero mousemove
+  /* Phone tilt */
   const handleHeroMove = useCallback((e) => {
     if (reduceMotion.current || !heroRef.current) return;
     const rect = heroRef.current.getBoundingClientRect();
@@ -321,14 +823,13 @@ export default function App() {
   }, []);
   const resetTilt = () => setTilt({ x: 0, y: 0 });
 
-  // active section tracking for bottom tab bar
+  /* Active section */
   useEffect(() => {
-    const sections = NAV.map((n) => document.getElementById(n.id)).filter(Boolean);
+    const ids = ["home", "about", "why", "craft", "work", "skills", "experience", "contact"];
+    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
     const obs = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        });
+        entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); });
       },
       { rootMargin: "-40% 0px -50% 0px", threshold: 0 }
     );
@@ -336,243 +837,439 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
+  /* Scroll reveals — observe all .sr-group elements */
+  useEffect(() => {
+    const groups = document.querySelectorAll(".sr-group");
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("sr-visible");
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+    groups.forEach((g) => obs.observe(g));
+    return () => obs.disconnect();
+  }, []);
+
+  /* ── Scroll-linked section stagger grids ── */
+  useEffect(() => {
+    const grids = document.querySelectorAll(".sr-stagger");
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const children = entry.target.querySelectorAll(".sr-item");
+            children.forEach((el, i) => {
+              setTimeout(() => el.classList.add("sr-item-in"), i * 80);
+            });
+            obs.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.06 }
+    );
+    grids.forEach((g) => obs.observe(g));
+    return () => obs.disconnect();
+  }, []);
+
+  /* ── Scroll-reveal for .sr-line elements (section heads) ── */
+  useEffect(() => {
+    const lines = document.querySelectorAll(".sr-line");
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("sr-line-in"); obs.unobserve(e.target); }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    lines.forEach((l) => obs.observe(l));
+    return () => obs.disconnect();
+  }, []);
+
+  /* ─────────────────── JSX ─────────────────── */
   return (
     <div className="ap-root">
       <style>{CSS}</style>
 
-      <div ref={spotRef} className="ap-spotlight" aria-hidden="true" />
-      <div ref={meshRef} className="ap-mesh" aria-hidden="true">
-        <span className="blob blob-coral" />
-        <span className="blob blob-indigo" />
-        <span className="blob blob-lime" />
-      </div>
+      <CustomCursor />
 
-      <div className="ap-status">
-        <span><span className="ap-dot" />open to opportunities</span>
-        <span className="ap-brand">AIMAH BILAL</span>
-        <span className="ap-status-loc">multan, pk</span>
-      </div>
+      {/* NAV */}
+      <header className="ap-nav">
+        <div className="ap-nav-left">
+          <span className="ap-dot" />
+          <span className="ap-nav-status">open to opportunities</span>
+        </div>
 
-      <div className="ap-wrap">
-        {/* HERO */}
-        <section
-          id="home"
-          className="ap-hero"
-          ref={heroRef}
-          onMouseMove={handleHeroMove}
-          onMouseLeave={resetTilt}
-        >
-          <div>
-            <div className="ap-eyebrow">Hi, I'm Aimah Bilal</div>
-            <h1 className="ap-h1">
-              UI/UX Designer &<br />
+        <nav className="ap-nav-links" aria-label="Main navigation">
+          {TOP_NAV.map(({ id, label }) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className={`ap-nav-link ${active === id ? "active" : ""}`}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="ap-nav-right">
+          <span className="ap-nav-loc">multan, pk</span>
+          <button
+            type="button"
+            className="ap-hamburger"
+            onClick={() => setMenuOpen((p) => !p)}
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
+
+        {menuOpen && (
+          <div className="ap-mobile-menu">
+            {TOP_NAV.map(({ id, label }) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                className={`ap-mobile-link ${active === id ? "active" : ""}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* HERO */}
+      <section
+        id="home"
+        className="ap-hero"
+        ref={heroRef}
+        onMouseMove={handleHeroMove}
+        onMouseLeave={resetTilt}
+      >
+        <HeroCanvas reduceMotion={reduceMotion.current} />
+
+        <div className="ap-wrap ap-hero-inner">
+          <div className="ap-hero-top sr-group">
+            <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+              Hi, I'm Aimah Bilal
+            </div>
+            <h1 className="ap-h1 sr-child" style={{ "--i": 1 }}>
+              UI/UX Designer &amp;<br />
               <span className="ap-accent">Frontend Developer</span>
             </h1>
-            <p className="ap-lede">
-              I design intuitive digital experiences and turn them into responsive, functional web interfaces.
-            </p>
-            <div className="ap-hero-tech">
-              Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS
-            </div>
-            <div className="ap-cta-row">
-              <a href="#work" className="ap-btn ap-btn-primary">
-                View My Work <ArrowUpRight size={16} />
-              </a>
-              <a href="#contact" className="ap-btn ap-btn-ghost">Let's Connect</a>
-            </div>
-            <div className="ap-stat-row">
-              <div className="ap-stat"><div className="ap-num">9+</div><div className="ap-label">projects delivered</div></div>
-              <div className="ap-stat"><div className="ap-num">6th</div><div className="ap-label">semester, BSCS</div></div>
-              <div className="ap-stat"><div className="ap-num">3.29</div><div className="ap-label">CGPA</div></div>
-            </div>
           </div>
 
-          <div className="ap-phone-stage">
-            <div
-              className="ap-phone"
-              style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
-            >
-              <div className="ap-phone-screen">
-                <div className="ap-phone-header">
-                  <div className="ap-avatar" />
-                  <div>
-                    <div className="ap-name">Design Review</div>
-                    <div className="ap-sub">● online</div>
+          <div className="ap-hero-lower sr-group">
+            <div className="ap-hero-left sr-child" style={{ "--i": 2 }}>
+              <p className="ap-lede">
+                I design intuitive digital experiences and turn them into responsive, functional web interfaces.
+              </p>
+              <div className="ap-hero-tech">
+                Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS
+              </div>
+              <div className="ap-cta-row">
+                <a href="#work" className="ap-btn ap-btn-primary">
+                  View My Work <ArrowUpRight size={15} />
+                </a>
+                <a href="#contact" className="ap-btn ap-btn-ghost">Let's Connect</a>
+              </div>
+              <div className="ap-stat-row">
+                <div><div className="ap-num">9+</div><div className="ap-label">projects delivered</div></div>
+                <div><div className="ap-num">6th</div><div className="ap-label">semester, BSCS</div></div>
+                <div><div className="ap-num">3.29</div><div className="ap-label">CGPA</div></div>
+              </div>
+            </div>
+
+            <div className="ap-hero-right sr-child" style={{ "--i": 3 }}>
+              <div className="ap-phone-stage">
+                <div
+                  className="ap-phone"
+                  style={{ transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
+                >
+                  <div className="ap-phone-screen">
+                    <div className="ap-phone-header">
+                      <div className="ap-avatar" />
+                      <div>
+                        <div className="ap-name">Design Review</div>
+                        <div className="ap-sub">● online</div>
+                      </div>
+                    </div>
+                    <div className="ap-bubble ap-in">Can you ship the new theme by Friday?</div>
+                    <div className="ap-bubble ap-out">Already building it ✦</div>
+                    <div className="ap-bubble ap-in">Pixel perfect as always</div>
+                    <div className="ap-bubble ap-out">That's the only setting I have</div>
+                    <div className="ap-typing"><span /><span /><span /></div>
                   </div>
                 </div>
-                <div className="ap-bubble ap-in">Can you ship the new theme by Friday?</div>
-                <div className="ap-bubble ap-out">Already building it ✦</div>
-                <div className="ap-bubble ap-in">Pixel-perfect as always</div>
-                <div className="ap-bubble ap-out">That's the only setting I have</div>
-                <div className="ap-typing"><span /><span /><span /></div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* ABOUT */}
-        <section id="about" className="ap-section">
-          <div className="ap-section-head">
-            <div className="ap-eyebrow">about</div>
-            <h2 className="ap-h2">Grounded in code, driven by design.</h2>
-          </div>
-          <div className="ap-about-grid">
-            <div>
-              <p><strong>I'm Aimah</strong> — a Computer Science student and UI/UX Designer & Frontend Developer who designs interfaces and then builds them. During my internship at TCCI, I worked on real digital platforms — an ORIC Database Portal, a news and live-streaming site, and a lab platform — across both design and frontend.</p>
-              <p>I work with Figma, React, Next.js, TypeScript, and Tailwind CSS, with backend experience in Node.js, Express, MongoDB, Firebase, and Supabase. I care about interfaces that are polished, accessible, and genuinely usable.</p>
-            </div>
-            <div className="ap-edu-card">
-              <span className="ap-tag-pill"><GraduationCap size={13} /> education</span>
-              <h3>BS Computer Science</h3>
-              <div className="ap-school">Air University, Multan Campus</div>
-              <div className="ap-edu-row"><span>Aug 2023 – Jun 2027</span><b>6th Semester</b></div>
-              <div className="ap-edu-row ap-edu-row-last"><span>CGPA</span><b>3.29</b></div>
-            </div>
-          </div>
-        </section>
+      {/* MARQUEE */}
+      <div className="ap-marquee-wrap" aria-label="Tech stack overview">
+        <div className="ap-marquee-track">
+          <span>Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS · Flutter · Firebase · Supabase · Node.js</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS · Flutter · Firebase · Supabase · Node.js</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+        </div>
+      </div>
 
-        {/* WHY WORK WITH ME */}
-        <section id="why" className="ap-section">
-          <div className="ap-section-head">
-            <div className="ap-eyebrow">why work with me</div>
-            <h2 className="ap-h2">Design that ships.</h2>
-          </div>
-          <div className="ap-why-grid">
-            <div className="ap-why-card">
-              <h3>Design + Development</h3>
-              <p>I understand both sides of the product — from user flows and high-fidelity UI designs in Figma to implementing responsive interfaces with modern frontend technologies.</p>
+      {/* ABOUT */}
+      <section id="about" className="ap-section">
+        <div className="ap-wrap">
+          <div className="ap-about-layout">
+            <div className="ap-about-copy sr-group">
+              <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+                <span className="ap-eyebrow-num">01</span> about
+              </div>
+              <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>
+                Grounded in code,{" "}
+                <span className="ap-accent-italic">driven by design.</span>
+              </h2>
+              <p className="sr-child" style={{ "--i": 2 }}>
+                <strong>I'm Aimah</strong>, a Computer Science student and UI/UX Designer &amp; Frontend Developer who designs interfaces and then builds them. During my internship at TCCI, I worked on real digital platforms including an ORIC Database Portal, a news and live streaming site, and a lab platform across both design and frontend.
+              </p>
+              <p className="sr-child" style={{ "--i": 3 }}>
+                I work with Figma, React, Next.js, TypeScript, and Tailwind CSS, with backend experience in Node.js, Express, MongoDB, Firebase, and Supabase. I care about interfaces that are polished, accessible, and genuinely usable.
+              </p>
             </div>
-            <div className="ap-why-card">
-              <h3>Real-World Experience</h3>
-              <p>Through my TCCI internship, I contributed to production-oriented digital platforms and worked with complex requirements, dashboards, role-based interfaces, and database-driven systems.</p>
-            </div>
-            <div className="ap-why-card">
-              <h3>Problem Solver</h3>
-              <p>I enjoy breaking down complex requirements into clear user flows, organized information architectures, and practical interface solutions.</p>
-            </div>
-            <div className="ap-why-card">
-              <h3>Collaborative Mindset</h3>
-              <p>I've worked with developers, supervisors, and other interns using collaborative workflows and Git/GitHub to refine and implement digital products.</p>
-            </div>
-            <div className="ap-why-card">
-              <h3>Always Learning</h3>
-              <p>I'm continuously improving my design and development skills and enjoy working on products where I can learn, contribute, and create meaningful user experiences.</p>
-            </div>
-          </div>
-        </section>
 
-        {/* WORK */}
-        <section id="work" className="ap-section">
-          <div className="ap-section-head">
-            <div className="ap-eyebrow">selected work</div>
-            <h2 className="ap-h2">Nine builds, one obsession with detail.</h2>
-            <p className="ap-section-sub">Each card represents a real project or platform — click image to expand screenshot lightbox.</p>
+            <div className="ap-edu-card sr-group">
+              <span className="ap-tag-pill sr-child" style={{ "--i": 0 }}>
+                <GraduationCap size={13} /> education
+              </span>
+              <h3 className="sr-child" style={{ "--i": 1 }}>BS Computer Science</h3>
+              <div className="ap-school sr-child" style={{ "--i": 2 }}>Air University, Multan Campus</div>
+              <div className="ap-edu-row sr-child" style={{ "--i": 3 }}>
+                <span>Aug 2023 to Jun 2027</span><b>6th Semester</b>
+              </div>
+              <div className="ap-edu-row ap-edu-row-last sr-child" style={{ "--i": 4 }}>
+                <span>CGPA</span><b>3.29</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY */}
+      <section id="why" className="ap-section ap-why-section">
+        <div className="ap-wrap">
+          <div className="ap-section-head sr-group">
+            <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+              <span className="ap-eyebrow-num">02</span> why work with me
+            </div>
+            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>Design that ships.</h2>
           </div>
 
-          <div className="ap-grid">
-            {PROJECTS.map((p) => (
-              <ProjectCard project={p} key={p.name} onOpenLightbox={openLightbox} />
+          <div className="ap-why-list sr-stagger">
+            {WHY_ITEMS.map((item, i) => (
+              <div className="ap-why-item sr-item" key={item.title}>
+                <div className="ap-why-num">{String(i + 1).padStart(2, "0")}</div>
+                <div className="ap-why-body">
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* SKILLS */}
-        <section id="skills" className="ap-section">
-          <div className="ap-section-head">
-            <div className="ap-eyebrow">toolkit</div>
-            <h2 className="ap-h2">What I build with.</h2>
+      {/* CRAFT */}
+      <CraftSection reduceMotion={reduceMotion.current} active={active === "craft"} />
+
+      {/* WORK */}
+      <section id="work" className="ap-section">
+        <div className="ap-wrap">
+          <div className="ap-section-head sr-group">
+            <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+              <span className="ap-eyebrow-num">04</span> selected work
+            </div>
+            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>Nine builds, one obsession with detail.</h2>
+            <p className="ap-section-sub sr-child" style={{ "--i": 2 }}>
+              Each card represents a real project or platform. Click image to expand screenshot lightbox.
+            </p>
           </div>
-          <div className="ap-skill-groups">
+
+          <div className="ap-grid sr-stagger">
+            {PROJECTS.map((p) => (
+              <div className="sr-item" key={p.slug}>
+                <ProjectCard project={p} onOpenLightbox={openLightbox} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SKILLS */}
+      <section id="skills" className="ap-section">
+        <div className="ap-wrap">
+          <div className="ap-section-head sr-group">
+            <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+              <span className="ap-eyebrow-num">05</span> toolkit
+            </div>
+            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>What I build with.</h2>
+          </div>
+
+          <div className="ap-skills-table sr-stagger">
             {SKILLS.map((s) => (
-              <div className="ap-skill-card" key={s.label}>
-                <div className="ap-skill-label">{s.label}</div>
+              <div className="ap-skill-row sr-item" key={s.label}>
+                <div className="ap-skill-cat">{s.label}</div>
                 <div className="ap-pill-row">
                   {s.items.map((it) => <span className="ap-pill" key={it}>{it}</span>)}
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* EXPERIENCE */}
-        <section id="experience" className="ap-section">
-          <div className="ap-section-head">
-            <div className="ap-eyebrow">experience</div>
-            <h2 className="ap-h2">Where I've worked.</h2>
+      {/* EXPERIENCE */}
+      <section id="experience" className="ap-section">
+        <div className="ap-wrap">
+          <div className="ap-section-head sr-group">
+            <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+              <span className="ap-eyebrow-num">06</span> experience
+            </div>
+            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>Where I've worked.</h2>
           </div>
-          <div className="ap-timeline">
-            <div className="ap-tl-item">
-              <h3>UI/UX & Frontend Development Intern</h3>
-              <div className="ap-role-meta"><span className="ap-company">TCCI</span><span>·</span><span>2026</span></div>
-              <ul>
-                <li>Contributed to UI/UX design and frontend development of TCCI digital platforms, including the ORIC Database Portal and TCCI Live.</li>
-                <li>Designed high-fidelity interfaces, dashboards, authentication flows, and research and commercialization modules.</li>
-                <li>Translated designs into responsive web interfaces using React/Next.js.</li>
-              </ul>
+
+          <div className="ap-timeline sr-stagger">
+            <div className="ap-tl-item sr-item">
+              <div className="ap-tl-year">2026</div>
+              <div className="ap-tl-body">
+                <h3>UI/UX &amp; Frontend Development Intern</h3>
+                <div className="ap-tl-meta">
+                  <span className="ap-company">TCCI</span>
+                </div>
+                <ul>
+                  <li>Contributed to UI/UX design and frontend development of TCCI digital platforms, including the ORIC Database Portal and TCCI Live.</li>
+                  <li>Designed high fidelity interfaces, dashboards, authentication flows, and research and commercialization modules.</li>
+                  <li>Translated designs into responsive web interfaces using React/Next.js.</li>
+                </ul>
+              </div>
             </div>
-            <div className="ap-tl-item">
-              <h3>Content Writer</h3>
-              <div className="ap-role-meta"><span className="ap-company">Fiesta Consultants</span><span>·</span><span>Aug 2024 – Dec 2025</span></div>
-              <ul>
-                <li>Created original, plagiarism-free content tailored to diverse client briefs.</li>
-                <li>Designed engaging presentations and visual assets using Canva.</li>
-                <li>Collaborated directly with clients to translate requirements into delivered work.</li>
-              </ul>
+
+            <div className="ap-tl-item sr-item">
+              <div className="ap-tl-year">2024</div>
+              <div className="ap-tl-body">
+                <h3>Content Writer</h3>
+                <div className="ap-tl-meta">
+                  <span className="ap-company">Fiesta Consultants</span>
+                  <span className="ap-tl-period">Aug 2024 to Dec 2025</span>
+                </div>
+                <ul>
+                  <li>Created original, plagiarism free content tailored to diverse client briefs.</li>
+                  <li>Designed engaging presentations and visual assets using Canva.</li>
+                  <li>Collaborated directly with clients to translate requirements into delivered work.</li>
+                </ul>
+              </div>
             </div>
-            <div className="ap-tl-item">
-              <h3>C++ Intern</h3>
-              <div className="ap-role-meta"><span className="ap-company">HiSkyTech</span><span>·</span><span>Jul 2024 – Aug 2024</span></div>
-              <ul>
-                <li>Applied core C++ concepts and worked with libraries in scenario-based application development.</li>
-              </ul>
+
+            <div className="ap-tl-item sr-item">
+              <div className="ap-tl-year">2024</div>
+              <div className="ap-tl-body">
+                <h3>C++ Intern</h3>
+                <div className="ap-tl-meta">
+                  <span className="ap-company">HiSkyTech</span>
+                  <span className="ap-tl-period">Jul 2024 to Aug 2024</span>
+                </div>
+                <ul>
+                  <li>Applied core C++ concepts and worked with libraries in scenario based application development.</li>
+                </ul>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* CONTACT */}
-        <section id="contact" className="ap-section">
-          <div className="ap-contact-panel">
-            <h2>Let's build something worth opening.</h2>
-            <p>I'm currently looking for internship and junior developer roles in Flutter, frontend, and UI/UX. If you've got a screen that needs designing or an app that needs building, I'd love to hear from you.</p>
-            <div className="ap-contact-links">
-              <a href="mailto:aimahbilal1@gmail.com"><Mail size={16} /> aimahbilal1@gmail.com</a>
-              <a href="tel:+923127108644"><Phone size={16} /> 0312-7108644</a>
-              <a href="https://github.com/aimahbilal1" target="_blank" rel="noopener noreferrer"><Github size={16} /> github.com/aimahbilal1</a>
+      {/* CONTACT */}
+      <section id="contact" className="ap-section ap-contact-section">
+        <div className="ap-wrap">
+          <div className="ap-section-head sr-group">
+            <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
+              <span className="ap-eyebrow-num">07</span> contact
+            </div>
+            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>
+              Let's build something worth opening.
+            </h2>
+          </div>
+
+          <div className="ap-contact-body sr-group">
+            <p className="sr-child" style={{ "--i": 2 }}>
+              I'm currently looking for internship and junior developer roles in Flutter, frontend, and UI/UX. If you've got a screen that needs designing or an app that needs building, I'd love to hear from you.
+            </p>
+
+            <div className="ap-contact-links sr-child" style={{ "--i": 3 }}>
+              <a href="mailto:aimahbilal1@gmail.com" className="ap-contact-link">
+                <Mail size={15} /> aimahbilal1@gmail.com
+              </a>
+              <a href="tel:+923127108644" className="ap-contact-link">
+                <Phone size={15} /> 0312 7108644
+              </a>
+              <a href="https://github.com/aimahbilal1" target="_blank" rel="noopener noreferrer" className="ap-contact-link">
+                <Github size={15} /> github.com/aimahbilal1
+              </a>
+            </div>
+
+            <div className="ap-compose-box sr-child" style={{ "--i": 4 }}>
+              <div className="ap-compose-fields">
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  value={cName}
+                  onChange={(e) => setCName(e.target.value)}
+                  className="ap-input"
+                />
+                <input
+                  type="text"
+                  placeholder="Your Message or Email"
+                  value={cMsg}
+                  onChange={(e) => setCMsg(e.target.value)}
+                  className="ap-input"
+                />
+              </div>
+              <div className="ap-compose-btns">
+                <button type="button" onClick={handleGmail} className="ap-btn ap-btn-primary">
+                  Open in Gmail <Mail size={14} />
+                </button>
+                <button type="button" onClick={handleWhatsApp} className="ap-btn ap-btn-ghost">
+                  Message on WhatsApp <MessageCircle size={14} />
+                </button>
+              </div>
+              <p className="ap-compose-note">Nothing is sent automatically. This opens a prefilled draft.</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <footer className="ap-footer">Built by Aimah Bilal · Multan, Pakistan · 2026</footer>
-      </div>
+      <footer className="ap-footer">
+        <div className="ap-wrap">
+          Built by Aimah Bilal · Multan, Pakistan · 2026
+        </div>
+      </footer>
 
-      {/* signature bottom tab bar */}
-      <nav className="ap-tabbar" aria-label="Section navigation">
-        {NAV.map(({ id, label, icon: Icon }) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className={`ap-tab ${active === id ? "ap-tab-active" : ""}`}
-          >
-            <Icon size={18} />
-            <span>{label}</span>
-          </a>
-        ))}
-      </nav>
-
-      {/* Full-size screenshot lightbox */}
+      {/* LIGHTBOX */}
       {lightbox && (
-        <div
-          className="ap-lightbox-backdrop"
-          onClick={() => setLightbox(null)}
-        >
+        <div className="ap-lightbox-backdrop" onClick={() => setLightbox(null)}>
           <div className="ap-lightbox-content" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="ap-lightbox-close"
               onClick={() => setLightbox(null)}
-              aria-label="Close image lightbox"
+              aria-label="Close"
             >
-              <X size={22} />
+              <X size={20} />
             </button>
 
             {lightbox.images.length > 1 && (
@@ -580,14 +1277,11 @@ export default function App() {
                 type="button"
                 className="ap-lightbox-nav ap-lightbox-prev"
                 onClick={() =>
-                  setLightbox((prev) => ({
-                    ...prev,
-                    index: (prev.index - 1 + prev.images.length) % prev.images.length,
-                  }))
+                  setLightbox((p) => ({ ...p, index: (p.index - 1 + p.images.length) % p.images.length }))
                 }
-                aria-label="Previous screenshot"
+                aria-label="Previous"
               >
-                <ChevronLeft size={28} />
+                <ChevronLeft size={26} />
               </button>
             )}
 
@@ -602,14 +1296,11 @@ export default function App() {
                 type="button"
                 className="ap-lightbox-nav ap-lightbox-next"
                 onClick={() =>
-                  setLightbox((prev) => ({
-                    ...prev,
-                    index: (prev.index + 1) % prev.images.length,
-                  }))
+                  setLightbox((p) => ({ ...p, index: (p.index + 1) % p.images.length }))
                 }
-                aria-label="Next screenshot"
+                aria-label="Next"
               >
-                <ChevronRight size={28} />
+                <ChevronRight size={26} />
               </button>
             )}
 
@@ -623,249 +1314,763 @@ export default function App() {
   );
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CSS
+══════════════════════════════════════════════════════════════════════════════ */
 const CSS = `
-  .ap-root{
-    --ink:#0D0B14;
-    --surface:#141021;
-    --surface-2:#221B36;
-    --coral:#FF6B57;
-    --coral-soft:rgba(255,107,87,0.16);
-    --indigo:#7C6FFF;
-    --indigo-soft:rgba(124,111,255,0.16);
-    --lime:#2FE6C7;
-    --lime-soft:rgba(47,230,199,0.16);
-    --text:#F5F2FC;
-    --muted:#A79FC4;
-    --muted-dim:#6B6486;
-    --border:rgba(245,242,252,0.08);
-    --border-strong:rgba(245,242,252,0.18);
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,300;1,9..144,600;1,9..144,700;1,9..144,800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    position:relative;
-    background:var(--ink);
-    color:var(--text);
-    font-family:'Inter',sans-serif;
-    line-height:1.6;
-    min-height:100vh;
-    overflow-x:hidden;
-    isolation:isolate;
+  /* ── Variables ── */
+  .ap-root {
+    --ink:         #FAF6EF;
+    --paper:       #2C2117;
+    --gray-1:      #6B5A46;
+    --gray-2:      #9C8A75;
+    --surface:     #F2EDE4;
+    --surface-2:   #E8E0D4;
+    --border:      rgba(44,33,23,0.10);
+    --border-strong: rgba(44,33,23,0.20);
+    --accent:      #C0440A;
+    --accent-soft: rgba(192,68,10,0.12);
+
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.65;
+    min-height: 100vh;
+    overflow-x: hidden;
+    isolation: isolate;
+    position: relative;
   }
-  .ap-root *{box-sizing:border-box;}
-  .ap-root h1,.ap-root h2,.ap-root h3{font-family:'Outfit',sans-serif; letter-spacing:-0.02em; margin:0;}
-  .ap-root a{color:inherit; text-decoration:none;}
-  .ap-root code{font-family:'JetBrains Mono',monospace;}
-  .ap-root ::selection{background:var(--lime); color:#0D0B14;}
+  .ap-root * { box-sizing: border-box; }
+  .ap-root a { color: inherit; text-decoration: none; }
+  .ap-root ::selection { background: var(--accent); color: var(--ink); }
+  .ap-root code { font-family: 'JetBrains Mono', monospace; }
+  .ap-root h1, .ap-root h2, .ap-root h3 { margin: 0; }
 
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-  /* mesh background */
-  .ap-mesh{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; will-change:transform;}
-  .blob{position:absolute; border-radius:50%; filter:blur(90px); opacity:0.35; mix-blend-mode:screen;}
-  .blob-coral{width:520px; height:520px; background:var(--coral); top:-140px; left:-120px; animation:drift1 22s ease-in-out infinite;}
-  .blob-indigo{width:560px; height:560px; background:var(--indigo); bottom:-200px; right:-160px; animation:drift2 26s ease-in-out infinite;}
-  .blob-lime{width:380px; height:380px; background:var(--lime); top:40%; left:60%; opacity:0.18; animation:drift3 30s ease-in-out infinite;}
-  @keyframes drift1{ 0%,100%{transform:translate(0,0);} 50%{transform:translate(60px,80px);} }
-  @keyframes drift2{ 0%,100%{transform:translate(0,0);} 50%{transform:translate(-70px,-50px);} }
-  @keyframes drift3{ 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-40px,40px) scale(1.15);} }
-  @media (prefers-reduced-motion: reduce){ .blob{animation:none;} }
-
-  /* cursor spotlight */
-  .ap-spotlight{
-    position:fixed; inset:0; z-index:1; pointer-events:none;
-    background:radial-gradient(320px circle at var(--mx,50%) var(--my,50%), rgba(212,255,63,0.06), transparent 70%);
+  /* ── Custom cursor ── */
+  .has-custom-cursor, .has-custom-cursor * { cursor: none !important; }
+  .cur-dot {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); pointer-events: none;
+    will-change: transform;
+  }
+  .cur-ring {
+    position: fixed; top: 0; left: 0; z-index: 9998;
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--border-strong);
+    pointer-events: none; will-change: transform;
+    transition: transform 0.12s ease;
   }
 
-  .ap-wrap{position:relative; z-index:2; max-width:1120px; margin:0 auto; padding:0 28px;}
-  .ap-section{padding:110px 0;}
-  @media (max-width:720px){ .ap-section{padding:76px 0;} }
+  /* ── Layout ── */
+  .ap-wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+  @media (max-width: 640px) { .ap-wrap { padding: 0 20px; } }
 
-  .ap-status{
-    position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
-    padding:14px 28px; background:rgba(13,11,20,0.75); backdrop-filter:blur(14px);
-    border-bottom:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
+  /* ── Navigation ── */
+  .ap-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px;
+    background: rgba(250,246,239,0.97);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+    height: 52px; gap: 16px;
   }
-  .ap-dot{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--lime); margin-right:8px; box-shadow:0 0 0 3px var(--lime-soft); animation:pulse 2.4s ease-in-out infinite;}
-  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-  .ap-brand{color:var(--text); font-weight:600; letter-spacing:0.02em;}
+  @media (max-width: 640px) { .ap-nav { padding: 0 20px; } }
 
-  .ap-hero{padding:92px 0 50px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:center; perspective:1000px;}
-  @media (max-width:860px){ .ap-hero{grid-template-columns:1fr; padding-top:52px;} }
-
-  .ap-eyebrow{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.14em; color:var(--lime); text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:10px;}
-  .ap-eyebrow::before{content:''; width:24px; height:1px; background:var(--lime);}
-
-  .ap-h1{font-size:clamp(2.3rem,5vw,3.5rem); font-weight:600; line-height:1.08; margin-bottom:22px;}
-  .ap-accent{background:linear-gradient(100deg,var(--coral),var(--indigo)); -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:700;}
-
-  .ap-lede{font-size:1.08rem; color:var(--muted); max-width:480px; margin-bottom:20px;}
-  .ap-hero-tech{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted-dim); margin-bottom:32px; letter-spacing:0.02em;}
-
-  .ap-cta-row{display:flex; gap:14px; flex-wrap:wrap;}
-  .ap-btn{padding:14px 26px; border-radius:100px; font-weight:600; font-size:0.94rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:1px solid transparent; transition:transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;}
-  .ap-btn-primary{background:var(--lime); color:#0D0B14;}
-  .ap-btn-primary:hover{transform:translateY(-2px); background:#e2ff6e;}
-  .ap-btn-ghost{border-color:var(--border-strong); color:var(--text);}
-  .ap-btn-ghost:hover{transform:translateY(-2px); border-color:var(--coral); background:var(--coral-soft);}
-
-  .ap-stat-row{display:flex; gap:32px; margin-top:44px; flex-wrap:wrap;}
-  .ap-num{font-family:'Outfit',sans-serif; font-size:1.7rem; font-weight:600;}
-  .ap-label{font-size:0.78rem; color:var(--muted-dim); text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;}
-
-  .ap-phone-stage{display:flex; justify-content:center;}
-  .ap-phone{
-    width:248px; height:504px; border-radius:38px; background:var(--surface);
-    border:8px solid #241D36; position:relative; overflow:hidden;
-    box-shadow:0 30px 80px -20px rgba(124,111,255,0.35), 0 0 0 1px rgba(255,255,255,0.03);
-    transition:transform 0.15s ease-out; transform-style:preserve-3d;
+  .ap-nav-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .ap-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 2.5px var(--accent-soft);
+    animation: pulse 2.2s ease-in-out infinite;
   }
-  .ap-phone::before{content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:88px; height:20px; background:#241D36; border-radius:0 0 14px 14px; z-index:5;}
-  .ap-phone-screen{position:absolute; inset:0; padding:34px 14px 16px; background:linear-gradient(165deg,#1D1830,#120F1E); display:flex; flex-direction:column; gap:8px;}
-  .ap-phone-header{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
-  .ap-avatar{width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--coral),var(--indigo));}
-  .ap-name{font-size:11px; font-weight:600;}
-  .ap-sub{font-size:9px; color:var(--lime);}
-  .ap-bubble{max-width:74%; padding:9px 13px; border-radius:14px; font-size:11px; opacity:0; animation:pop 0.5s ease forwards;}
-  .ap-in{align-self:flex-start; background:var(--surface-2); color:var(--muted); border-bottom-left-radius:4px;}
-  .ap-out{align-self:flex-end; background:var(--indigo); color:#F5F2FC; border-bottom-right-radius:4px;}
-  .ap-bubble:nth-of-type(1){animation-delay:0.4s;} .ap-bubble:nth-of-type(2){animation-delay:1.1s;}
-  .ap-bubble:nth-of-type(3){animation-delay:1.8s;} .ap-bubble:nth-of-type(4){animation-delay:2.5s;}
-  @keyframes pop{ from{opacity:0; transform:translateY(8px) scale(0.96);} to{opacity:1; transform:translateY(0) scale(1);} }
-  .ap-typing{display:flex; gap:3px; align-self:flex-start; background:var(--surface-2); padding:9px 12px; border-radius:14px; border-bottom-left-radius:4px; opacity:0; animation:pop 0.5s ease forwards; animation-delay:3.1s;}
-  .ap-typing span{width:4px; height:4px; border-radius:50%; background:var(--muted-dim); animation:blink 1.2s infinite;}
-  .ap-typing span:nth-child(2){animation-delay:0.2s;} .ap-typing span:nth-child(3){animation-delay:0.4s;}
-  @keyframes blink{ 0%,60%,100%{opacity:0.3;} 30%{opacity:1;} }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+  .ap-nav-status { color: var(--gray-1); white-space: nowrap; }
 
-  .ap-section-head{margin-bottom:52px;}
-  .ap-h2{font-size:clamp(1.8rem,3.4vw,2.4rem); font-weight:600;}
-  .ap-section-sub{color:var(--muted); max-width:520px; margin-top:12px; font-size:0.98rem;}
-
-  .ap-about-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;}
-  @media (max-width:780px){ .ap-about-grid{grid-template-columns:1fr;} }
-  .ap-about-grid p{color:var(--muted); margin-bottom:16px;}
-  .ap-about-grid strong{color:var(--text);}
-  .ap-edu-card{background:var(--surface); border:1px solid var(--border); border-radius:24px; padding:22px;}
-  .ap-tag-pill{display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--lime); background:var(--lime-soft); padding:5px 12px; border-radius:100px; margin-bottom:10px;}
-  .ap-edu-card h3{font-size:1.1rem; margin-bottom:6px;}
-  .ap-school{color:var(--muted); font-size:0.9rem; margin-bottom:14px;}
-  .ap-edu-row{display:flex; justify-content:space-between; font-size:0.85rem; color:var(--muted-dim); border-top:1px solid var(--border); padding-top:10px;}
-  .ap-edu-row b{color:var(--text);}
-  .ap-edu-row-last{border-top:none; padding-top:6px;}
-
-  /* why work with me grid */
-  .ap-why-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
-  @media (max-width:960px){ .ap-why-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:560px){ .ap-why-grid{grid-template-columns:1fr;} }
-  .ap-why-card{background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:24px; display:flex; flex-direction:column; gap:10px; transition:border-color 0.2s ease, transform 0.2s ease;}
-  .ap-why-card:hover{border-color:var(--border-strong); transform:translateY(-3px);}
-  .ap-why-card h3{font-size:1.05rem; font-family:'Outfit',sans-serif; color:var(--text); margin:0;}
-  .ap-why-card p{font-size:0.86rem; color:var(--muted); line-height:1.55; margin:0;}
-
-  .ap-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
-  @media (max-width:900px){ .ap-grid{grid-template-columns:1fr 1fr;} }
-  @media (max-width:600px){ .ap-grid{grid-template-columns:1fr;} }
-
-  .ap-card{background:var(--surface); border:1px solid var(--border); border-radius:28px; overflow:hidden; transition:transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; display:flex; flex-direction:column;}
-  .ap-card:hover{transform:translateY(-6px);}
-  .hue-coral:hover{border-color:rgba(255,107,87,0.45); box-shadow:0 0 25px rgba(255,107,87,0.22), 0 15px 35px -10px rgba(0,0,0,0.5);}
-  .hue-indigo:hover{border-color:rgba(124,111,255,0.45); box-shadow:0 0 25px rgba(124,111,255,0.22), 0 15px 35px -10px rgba(0,0,0,0.5);}
-  .hue-lime:hover{border-color:rgba(212,255,63,0.45); box-shadow:0 0 25px rgba(212,255,63,0.18), 0 15px 35px -10px rgba(0,0,0,0.5);}
-
-  .ap-shot{aspect-ratio:16/11; width:100%; position:relative; overflow:hidden;}
-  .ap-shot-main{width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; transition:opacity 0.2s ease;}
-  .ap-shot-badge{position:absolute; top:10px; right:10px; background:rgba(13,11,20,0.75); backdrop-filter:blur(8px); color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 8px; border-radius:100px; border:1px solid var(--border); pointer-events:none; z-index:3;}
-  .ap-shot-nav{position:absolute; bottom:0; left:0; right:0; padding:10px 12px; background:linear-gradient(to top, rgba(13,11,20,0.85) 0%, rgba(13,11,20,0) 100%); display:flex; justify-content:center; align-items:center; z-index:3;}
-  .ap-shot-dots{display:flex; gap:6px; align-items:center;}
-  .ap-shot-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.35); border:none; padding:0; cursor:pointer; transition:all 0.2s ease;}
-  .ap-shot-dot:hover{background:rgba(255,255,255,0.7);}
-  .ap-shot-dot.active{background:var(--lime); width:18px; border-radius:100px;}
-  .ap-shot-thumbs{display:flex; gap:6px; overflow-x:auto; max-width:100%; padding:2px 4px; scrollbar-width:none;}
-  .ap-shot-thumbs::-webkit-scrollbar{display:none;}
-  .ap-shot-thumb{width:28px; height:28px; border-radius:6px; overflow:hidden; border:1.5px solid transparent; padding:0; background:none; cursor:pointer; flex-shrink:0; opacity:0.6; transition:all 0.2s ease;}
-  .ap-shot-thumb:hover{opacity:0.9;}
-  .ap-shot-thumb.active{opacity:1; border-color:var(--lime); transform:scale(1.05);}
-  .hue-coral .ap-shot{background:linear-gradient(140deg,var(--coral-soft),var(--surface-2));}
-  .hue-indigo .ap-shot{background:linear-gradient(140deg,var(--indigo-soft),var(--surface-2));}
-  .hue-lime .ap-shot{background:linear-gradient(140deg,var(--lime-soft),var(--surface-2));}
-  .ap-shot-placeholder{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:16px;}
-  .ap-shot-placeholder span{font-size:11px; color:var(--muted-dim); line-height:1.6;}
-  .ap-shot-placeholder code{color:var(--muted); font-size:10.5px;}
-
-  .ap-card-body{padding:22px; display:flex; flex-direction:column; gap:12px; flex:1;}
-  .ap-card-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
-  .ap-card-top h3{font-size:1.08rem;}
-  .ap-years{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--muted-dim); white-space:nowrap;}
-  .ap-desc{color:var(--muted); font-size:0.86rem; line-height:1.55;}
-  .ap-tag-row{display:flex; flex-wrap:wrap; gap:6px;}
-  .ap-tag{font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:4px 9px; border-radius:100px; background:var(--surface-2); color:var(--muted);}
-  .ap-link-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:auto;}
-  .ap-link{display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:600; color:var(--lime);}
-
-  .ap-skill-groups{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  @media (max-width:820px){ .ap-skill-groups{grid-template-columns:1fr 1fr;} }
-  @media (max-width:560px){ .ap-skill-groups{grid-template-columns:1fr;} }
-  .ap-skill-card{background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:22px;}
-  .ap-skill-label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--coral); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px;}
-  .ap-pill-row{display:flex; flex-wrap:wrap; gap:8px;}
-  .ap-pill{font-size:0.82rem; padding:6px 12px; border-radius:100px; background:var(--surface-2); border:1px solid var(--border);}
-
-  .ap-timeline{position:relative; padding-left:28px; border-left:1px solid var(--border);}
-  @media (max-width:520px){ .ap-timeline{padding-left:24px; margin-left:6px;} }
-  .ap-tl-item{position:relative; padding-bottom:40px;}
-  .ap-tl-item:last-child{padding-bottom:0;}
-  .ap-tl-item::before{content:''; position:absolute; left:-33px; top:4px; width:9px; height:9px; border-radius:50%; background:var(--ink); border:2px solid var(--lime);}
-  .ap-tl-item h3{font-size:1.05rem; margin-bottom:2px;}
-  .ap-role-meta{display:flex; gap:10px; align-items:center; font-size:0.82rem; color:var(--muted-dim); margin-bottom:10px; flex-wrap:wrap;}
-  .ap-company{color:var(--coral); font-weight:600;}
-  .ap-tl-item ul{padding-left:18px; color:var(--muted); font-size:0.92rem; display:flex; flex-direction:column; gap:6px;}
-
-  .ap-contact-panel{background:linear-gradient(150deg,var(--surface),var(--surface-2)); border:1px solid var(--border-strong); border-radius:32px; padding:56px; text-align:center; position:relative; overflow:hidden;}
-  @media (max-width:600px){ .ap-contact-panel{padding:36px 20px;} }
-  .ap-contact-panel h2{font-size:clamp(1.7rem,4vw,2.5rem); margin-bottom:14px; font-family:'Outfit',sans-serif;}
-  .ap-contact-panel p{color:var(--muted); max-width:460px; margin:0 auto 30px;}
-  .ap-contact-links{display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
-  .ap-contact-links a{display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:100px; border:1px solid var(--border-strong); font-size:0.9rem; font-weight:600; transition:border-color 0.2s ease, background 0.2s ease;}
-  .ap-contact-links a:hover{border-color:var(--lime); background:var(--lime-soft);}
-
-  .ap-footer{padding:36px 0 130px; text-align:center; color:var(--muted-dim); font-size:0.8rem; font-family:'JetBrains Mono',monospace;}
-
-  .ap-tabbar{position:fixed; bottom:18px; left:50%; transform:translateX(-50%); z-index:100; display:flex; gap:4px; padding:8px; border-radius:100px; background:rgba(23,19,37,0.85); backdrop-filter:blur(16px); border:1px solid var(--border-strong); box-shadow:0 12px 34px -12px rgba(0,0,0,0.6); max-width:calc(100vw - 24px);}
-  .ap-tab{display:flex; flex-direction:column; align-items:center; gap:3px; padding:8px 16px; border-radius:100px; color:var(--muted-dim); cursor:pointer; font-size:10px; font-family:'JetBrains Mono',monospace; transition:color 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); background:transparent;}
-  .ap-tab-active{color:#0D0B14; background:var(--lime); transform:scale(1.04);}
-  .ap-tab:not(.ap-tab-active):hover{color:var(--text); background:var(--surface-2);}
-  @media (max-width:520px){ .ap-tab span{display:none;} .ap-tab{padding:10px;} }
-
-  /* Lightbox */
-  .ap-lightbox-backdrop{
-    position:fixed; inset:0; z-index:1000; background:rgba(10,8,16,0.92); backdrop-filter:blur(10px);
-    display:flex; align-items:center; justify-content:center; padding:20px;
+  .ap-nav-links { display: flex; align-items: center; gap: 20px; }
+  .ap-nav-link {
+    color: var(--gray-2); font-size: 11px; letter-spacing: 0.04em;
+    text-transform: uppercase; position: relative; padding: 4px 0;
+    transition: color 0.2s ease;
   }
-  .ap-lightbox-content{
-    position:relative; max-width:92vw; max-height:88vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  .ap-nav-link::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    height: 1px; background: var(--accent);
+    width: 0; transition: width 0.25s cubic-bezier(0.25,1,0.5,1);
   }
-  .ap-lightbox-img{
-    max-width:90vw; max-height:80vh; object-fit:contain; border-radius:12px;
-    box-shadow:0 20px 50px rgba(0,0,0,0.8); border:1px solid var(--border-strong);
+  .ap-nav-link:hover, .ap-nav-link.active { color: var(--paper); }
+  .ap-nav-link:hover::after, .ap-nav-link.active::after { width: 100%; }
+
+  .ap-nav-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .ap-nav-loc { color: var(--gray-2); font-size: 11px; }
+
+  .ap-hamburger {
+    display: none; background: none; border: none;
+    color: var(--paper); cursor: pointer; padding: 4px;
+    align-items: center; justify-content: center;
   }
-  .ap-lightbox-close{
-    position:fixed; top:24px; right:24px; background:rgba(23,19,37,0.8); border:1px solid var(--border-strong);
-    color:var(--text); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; transition:all 0.2s ease; z-index:1001;
+  .ap-mobile-menu {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #F2EDE4; border-bottom: 1px solid var(--border-strong);
+    padding: 16px 32px; display: flex; flex-direction: column; gap: 12px;
+    box-shadow: 0 20px 40px rgba(100,70,40,0.15); z-index: 99;
   }
-  .ap-lightbox-close:hover{background:var(--coral); color:#0D0B14; transform:scale(1.05);}
-  .ap-lightbox-nav{
-    position:absolute; top:50%; transform:translateY(-50%); background:rgba(23,19,37,0.8); border:1px solid var(--border-strong);
-    color:var(--text); border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center;
-    cursor:pointer; transition:all 0.2s ease; z-index:1001;
+  .ap-mobile-link {
+    color: var(--gray-1); font-size: 13px; padding: 6px 0;
+    transition: color 0.2s ease; font-family: 'JetBrains Mono', monospace;
   }
-  .ap-lightbox-prev{left:-60px;}
-  .ap-lightbox-next{right:-60px;}
-  @media (max-width:768px){
-    .ap-lightbox-close{top:16px; right:16px;}
-    .ap-lightbox-prev{left:10px;}
-    .ap-lightbox-next{right:10px;}
+  .ap-mobile-link.active, .ap-mobile-link:hover { color: var(--accent); }
+
+  @media (max-width: 760px) {
+    .ap-nav-links { display: none; }
+    .ap-hamburger { display: flex; }
+    .ap-nav-loc { display: none; }
   }
-  .ap-lightbox-nav:hover{background:var(--lime); color:#0D0B14; transform:translateY(-50%) scale(1.05);}
-  .ap-lightbox-caption{
-    margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
-    background:rgba(23,19,37,0.7); padding:4px 14px; border-radius:100px; border:1px solid var(--border);
+
+  /* ── Scroll reveal system ── */
+  .sr-child {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sr-item {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sr-child, .sr-item {
+      transform: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* ── HERO ── */
+  .ap-hero {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px 0 80px;
+    overflow: hidden;
+  }
+  .ap-hero-canvas {
+    position: fixed; inset: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+  .ap-hero-inner {
+    position: relative; z-index: 1;
+  }
+  .ap-hero-top { margin-bottom: 52px; }
+
+  .ap-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.12em;
+    color: var(--accent); text-transform: uppercase;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .ap-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--accent); }
+  .ap-eyebrow-num { font-weight: 500; }
+
+  .ap-h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(3.2rem, 8vw, 7.5rem);
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    color: var(--paper);
+  }
+  .ap-accent {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .ap-accent-italic {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .ap-hero-lower {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  @media (max-width: 800px) {
+    .ap-hero-lower { grid-template-columns: 1fr; }
+    .ap-hero-right { display: none; }
+  }
+
+  .ap-lede { font-size: 1.05rem; color: var(--gray-1); max-width: 440px; margin-bottom: 8px; }
+  .ap-hero-tech {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--gray-2); margin: 16px 0 28px;
+    letter-spacing: 0.02em;
+  }
+
+  .ap-cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+  .ap-btn {
+    padding: 12px 24px; border-radius: 100px;
+    font-weight: 600; font-size: 0.88rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer; border: 1px solid transparent;
+    transition: transform 0.18s cubic-bezier(0.25,1,0.5,1),
+                background 0.18s ease,
+                border-color 0.18s ease;
+    letter-spacing: 0.01em;
+  }
+  .ap-btn-primary { background: var(--accent); color: var(--ink); border-color: var(--accent); }
+  .ap-btn-primary:hover { transform: translateY(-2px) skewX(-2deg); background: #ff654e; }
+  .ap-btn-ghost { border-color: var(--border-strong); color: var(--paper); }
+  .ap-btn-ghost:hover { transform: translateY(-2px) skewX(-2deg); border-color: var(--accent); background: var(--accent-soft); }
+
+  .ap-stat-row { display: flex; gap: 36px; flex-wrap: wrap; }
+  .ap-num {
+    font-family: 'Fraunces', serif;
+    font-size: 2rem; font-weight: 700; line-height: 1;
+    color: var(--paper);
+  }
+  .ap-label {
+    font-size: 0.72rem; color: var(--gray-2);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px;
+  }
+
+  /* ── Phone mockup ── */
+  .ap-phone-stage { display: flex; justify-content: center; }
+  .ap-phone {
+    width: 232px; height: 476px; border-radius: 36px;
+    background: var(--surface); border: 7px solid #BFB5A8;
+    position: relative; overflow: hidden;
+    box-shadow: 0 40px 80px -20px rgba(100,70,40,0.3), 0 0 0 1px var(--border-strong);
+    transform-style: preserve-3d; transition: transform 0.1s ease-out;
+  }
+  .ap-phone::before {
+    content: ''; position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 18px; background: #BFB5A8;
+    border-radius: 0 0 12px 12px; z-index: 5;
+  }
+  .ap-phone-screen {
+    position: absolute; inset: 0;
+    padding: 30px 12px 14px; background: #EFE9DF;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+  .ap-phone-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .ap-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .ap-name { font-size: 11px; font-weight: 600; color: var(--paper); }
+  .ap-sub { font-size: 9px; color: var(--accent); }
+  .ap-bubble {
+    max-width: 76%; padding: 9px 13px; border-radius: 14px;
+    font-size: 10.5px; opacity: 0; animation: bpop 0.45s ease forwards;
+  }
+  .ap-in  { align-self: flex-start; background: #DDD5C8; color: var(--paper); border-bottom-left-radius: 4px; }
+  .ap-out { align-self: flex-end; background: var(--accent); color: var(--ink); font-weight: 500; border-bottom-right-radius: 4px; }
+  .ap-bubble:nth-of-type(1) { animation-delay: 0.5s; }
+  .ap-bubble:nth-of-type(2) { animation-delay: 1.2s; }
+  .ap-bubble:nth-of-type(3) { animation-delay: 1.9s; }
+  .ap-bubble:nth-of-type(4) { animation-delay: 2.6s; }
+  @keyframes bpop { from { opacity:0; transform:translateY(6px) scale(0.96); } to { opacity:1; transform:none; } }
+  .ap-typing {
+    display: flex; gap: 3px; align-self: flex-start;
+    background: #DDD5C8; padding: 9px 12px; border-radius: 14px;
+    border-bottom-left-radius: 4px; opacity: 0;
+    animation: bpop 0.45s ease forwards; animation-delay: 3.2s;
+  }
+  .ap-typing span { width: 4px; height: 4px; border-radius: 50%; background: var(--gray-2); animation: blink 1.2s infinite; }
+  .ap-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .ap-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,60%,100% { opacity:0.3; } 30% { opacity:1; } }
+
+  /* ── Marquee ── */
+  .ap-marquee-wrap {
+    overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    padding: 11px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gray-2);
+  }
+  .ap-marquee-track {
+    display: flex; width: max-content; white-space: nowrap;
+    animation: marquee 32s linear infinite;
+  }
+  .ap-marquee-wrap:hover .ap-marquee-track { animation-play-state: paused; }
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .ap-marquee-track { animation: none; width: 100%; white-space: normal; }
+  }
+
+  /* ── Section base ── */
+  .ap-section { padding: 110px 0; }
+  @media (max-width: 720px) { .ap-section { padding: 72px 0; } }
+
+  .ap-section-head { margin-bottom: 56px; }
+  .ap-h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4.5vw, 3.8rem);
+    font-weight: 700; line-height: 0.96;
+    letter-spacing: -0.025em; color: var(--paper);
+    margin-bottom: 12px;
+  }
+  .ap-section-sub { color: var(--gray-1); font-size: 0.96rem; max-width: 480px; }
+
+  /* ── About ── */
+  .ap-about-layout {
+    display: grid; grid-template-columns: 1.2fr 0.8fr;
+    gap: 64px; align-items: start;
+  }
+  @media (max-width: 780px) { .ap-about-layout { grid-template-columns: 1fr; gap: 40px; } }
+
+  .ap-about-copy p { color: var(--gray-1); margin-bottom: 16px; font-size: 0.98rem; }
+  .ap-about-copy strong { color: var(--paper); }
+
+  .ap-edu-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 26px;
+    transition: border-color 0.2s ease;
+  }
+  .ap-edu-card:hover { border-color: var(--border-strong); }
+  .ap-tag-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 4px 12px; border-radius: 100px; margin-bottom: 16px;
+  }
+  .ap-edu-card h3 {
+    font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
+    color: var(--paper); margin-bottom: 6px;
+  }
+  .ap-school { color: var(--gray-1); font-size: 0.88rem; margin-bottom: 18px; }
+  .ap-edu-row {
+    display: flex; justify-content: space-between;
+    font-size: 0.83rem; color: var(--gray-2);
+    border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
+  }
+  .ap-edu-row b { color: var(--paper); }
+  .ap-edu-row-last { border-top: none; padding-top: 6px; }
+
+  /* ── Why — numbered editorial list ── */
+  .ap-why-section { background: var(--surface); }
+  .ap-why-list { display: flex; flex-direction: column; }
+  .ap-why-item {
+    display: grid; grid-template-columns: 80px 1fr;
+    gap: 32px; align-items: start;
+    padding: 28px 0;
+    border-top: 1px solid var(--border);
+    transition: border-color 0.2s ease;
+  }
+  .ap-why-item:hover { border-color: var(--border-strong); }
+  .ap-why-item:last-child { border-bottom: 1px solid var(--border); }
+  @media (max-width: 640px) {
+    .ap-why-item { grid-template-columns: 1fr; gap: 10px; }
+  }
+  .ap-why-num {
+    font-family: 'Fraunces', serif; font-size: 3.5rem; font-weight: 700;
+    line-height: 1; color: var(--surface);
+    letter-spacing: -0.04em;
+    -webkit-text-stroke: 1px var(--border-strong);
+    text-stroke: 1px var(--border-strong);
+    user-select: none;
+    transition: color 0.2s ease, -webkit-text-stroke-color 0.2s ease;
+  }
+  .ap-why-item:hover .ap-why-num {
+    color: transparent;
+    -webkit-text-stroke-color: var(--accent);
+  }
+  .ap-why-body h3 {
+    font-family: 'Fraunces', serif; font-size: 1.25rem; font-weight: 700;
+    color: var(--paper); margin-bottom: 8px; margin-top: 6px;
+    letter-spacing: -0.02em;
+  }
+  .ap-why-body p { color: var(--gray-1); font-size: 0.93rem; line-height: 1.65; }
+
+  /* ── Craft Grid & Labs ── */
+  .ap-craft-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  @media (max-width: 768px) { .ap-craft-grid { grid-template-columns: 1fr; } }
+  .ap-craft-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 24px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 270px; position: relative; overflow: hidden;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .ap-craft-card:hover {
+    border-color: rgba(192,68,10,0.3);
+    box-shadow: 0 16px 36px -10px rgba(100,70,40,0.2);
+  }
+  .ap-craft-header-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .ap-craft-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 3px 9px; border-radius: 100px; font-weight: 500;
+  }
+  .ap-craft-telemetry {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--gray-2);
+  }
+  .ap-craft-stage {
+    flex: 1; display: flex; align-items: center;
+    justify-content: center; min-height: 130px; position: relative;
+  }
+  .ap-craft-stage-column {
+    flex-direction: column; gap: 14px; width: 100%;
+  }
+  .ap-craft-caption {
+    font-family: 'Inter', sans-serif; font-size: 12px;
+    color: var(--gray-1); margin-top: 18px;
+    border-top: 1px solid var(--border); padding-top: 12px;
+    line-height: 1.5;
+  }
+  .ap-craft-caption b { color: var(--paper); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* Lab 1: Magnetic */
+  .ap-mag-btn {
+    padding: 13px 26px; border-radius: 100px;
+    background: var(--surface-2); border: 1px solid var(--accent);
+    color: var(--paper); font-weight: 600; font-size: 0.88rem; cursor: pointer;
+    transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 8px 24px rgba(255,74,46,0.15);
+  }
+  .ap-mag-btn:hover { background: var(--accent-soft); box-shadow: 0 12px 30px rgba(255,74,46,0.25); }
+  .ap-mag-pill-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--accent); background: rgba(255,74,46,0.18);
+    padding: 2px 8px; border-radius: 100px;
+  }
+
+  /* Lab 2: Swatch & Presets */
+  .ap-swatch-box {
+    width: 100%; height: 60px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .ap-swatch-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    background: rgba(250,246,239,0.88); padding: 5px 14px;
+    border-radius: 100px; color: var(--paper);
+    border: 1px solid var(--border-strong);
+  }
+  .ap-swatch-controls {
+    width: 100%; display: flex; flex-direction: column; gap: 10px;
+  }
+  .ap-craft-slider {
+    width: 100%; accent-color: var(--accent); cursor: pointer;
+    height: 4px; background: var(--surface-2); border-radius: 2px;
+  }
+  .ap-preset-pills { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .ap-preset-pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--gray-1); padding: 3px 10px; border-radius: 100px;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .ap-preset-pill:hover, .ap-preset-pill.active {
+    border-color: var(--accent); color: var(--accent); background: var(--accent-soft);
+  }
+
+  /* Lab 3: 3D Matrix Flip */
+  .ap-flip-card {
+    width: 100%; height: 120px; perspective: 700px; cursor: pointer;
+    transition: transform 0.15s ease-out;
+  }
+  .ap-flip-inner {
+    width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .ap-flip-card.flipped .ap-flip-inner { transform: rotateY(180deg); }
+  .ap-flip-front, .ap-flip-back {
+    position: absolute; inset: 0; backface-visibility: hidden; border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 18px; text-align: center;
+    border: 1px solid var(--border-strong);
+  }
+  .ap-flip-front {
+    color: var(--paper);
+  }
+  .ap-flip-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; color: var(--paper); }
+  .ap-flip-sub { font-size: 11px; color: var(--gray-1); font-family: 'JetBrains Mono', monospace; }
+  .ap-flip-back {
+    background: var(--surface-2); border-color: var(--accent);
+    color: var(--paper); transform: rotateY(180deg); gap: 6px;
+  }
+  .ap-flip-back code { font-size: 10.5px; color: var(--accent); }
+  .ap-flip-back-hint { font-size: 10px; color: var(--gray-2); font-family: 'JetBrains Mono', monospace; }
+
+  /* Lab 4: Filter Matrix */
+  .ap-craft-filter-bar { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .ap-craft-mini-input {
+    width: 100%; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 12px; color: var(--paper);
+    font-size: 11px; font-family: 'Inter', sans-serif; outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .ap-craft-mini-input:focus { border-color: var(--accent); }
+  .ap-filter-cat-row { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; }
+  .ap-filter-cat-btn {
+    background: none; border: none; font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; color: var(--gray-2); padding: 2px 6px; border-radius: 4px;
+    cursor: pointer; white-space: nowrap; transition: color 0.15s ease;
+  }
+  .ap-filter-cat-btn:hover, .ap-filter-cat-btn.active { color: var(--accent); font-weight: 600; }
+  .ap-craft-chips-grid { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; min-height: 48px; align-content: flex-start; }
+  .ap-craft-chip {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: 4px 8px; border-radius: 6px; color: var(--paper);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .ap-chip-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .ap-craft-chip small { color: var(--gray-2); font-size: 9px; }
+  .ap-craft-empty { font-size: 11px; color: var(--gray-2); font-style: italic; }
+
+  /* ── Work Grid ── */
+  .ap-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 780px) {
+    .ap-grid {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+  }
+
+  /* ── Project card ── */
+  .ap-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; overflow: hidden;
+    display: flex; flex-direction: column; height: 100%;
+    transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.25,1,0.5,1), box-shadow 0.25s ease;
+    position: relative;
+  }
+  .ap-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit;
+    box-shadow: 0 0 0 0 var(--accent);
+    transition: box-shadow 0.3s ease; pointer-events: none; z-index: 1;
+  }
+  .ap-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(192,68,10,0.35);
+    box-shadow: 0 20px 40px -12px rgba(100,70,40,0.22), 0 0 22px rgba(192,68,10,0.12);
+  }
+  .ap-shot { aspect-ratio: 16/10; width: 100%; position: relative; overflow: hidden; background: var(--surface-2); }
+  .ap-shot-main { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; transition: transform 0.4s ease; }
+  .ap-card:hover .ap-shot-main { transform: scale(1.03); }
+  .ap-shot-badge {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(250,246,239,0.90); color: var(--gray-1);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 3px 9px; border-radius: 100px; border: 1px solid var(--border);
+    pointer-events: none; z-index: 3;
+  }
+  .ap-shot-nav {
+    position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 12px;
+    background: rgba(250,246,239,0.90);
+    display: flex; justify-content: center; align-items: center; z-index: 3;
+  }
+  .ap-shot-dots { display: flex; gap: 6px; align-items: center; }
+  .ap-shot-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(44,33,23,0.25); border: none; padding: 0; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ap-shot-dot:hover { background: rgba(44,33,23,0.55); }
+  .ap-shot-dot.active { background: var(--accent); width: 16px; border-radius: 100px; }
+  .ap-shot-thumbs { display: flex; gap: 5px; overflow-x: auto; max-width: 100%; padding: 2px 4px; scrollbar-width: none; }
+  .ap-shot-thumbs::-webkit-scrollbar { display: none; }
+  .ap-shot-thumb {
+    width: 26px; height: 26px; border-radius: 5px; overflow: hidden;
+    border: 1.5px solid transparent; padding: 0; background: none;
+    cursor: pointer; flex-shrink: 0; opacity: 0.55; transition: all 0.2s ease;
+  }
+  .ap-shot-thumb:hover { opacity: 0.85; }
+  .ap-shot-thumb.active { opacity: 1; border-color: var(--accent); }
+  .ap-shot-placeholder {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; padding: 16px;
+  }
+  .ap-shot-placeholder span { font-size: 11px; color: var(--gray-2); line-height: 1.6; margin-top: 2px; }
+  .ap-shot-placeholder code { color: var(--gray-1); font-size: 10.5px; }
+
+  .ap-card-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .ap-card-meta-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .ap-card-path { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gray-2); }
+  .ap-card-badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    padding: 2px 8px; border-radius: 100px; font-weight: 500;
+    border: 1px solid var(--border); background: transparent; color: var(--gray-1);
+    white-space: nowrap;
+  }
+  .ap-card-badge.is-client { color: var(--accent); border-color: var(--accent-soft); }
+  .ap-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ap-card-top h3 {
+    font-family: 'Fraunces', serif; font-size: 1.05rem; font-weight: 700;
+    color: var(--paper); letter-spacing: -0.02em;
+  }
+  .ap-years { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gray-2); white-space: nowrap; }
+  .ap-desc { color: var(--gray-1); font-size: 0.84rem; line-height: 1.58; }
+  .ap-tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .ap-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    padding: 3px 9px; border-radius: 100px; background: var(--surface-2);
+    color: var(--gray-1); border: 1px solid var(--border);
+  }
+  .ap-link-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
+  .ap-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 0.82rem; font-weight: 600; color: var(--accent);
+    transition: gap 0.2s ease;
+  }
+  .ap-link:hover { gap: 8px; }
+
+  /* ── Skills ── */
+  .ap-skills-table { display: flex; flex-direction: column; }
+  .ap-skill-row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px;
+    padding: 18px 0; border-top: 1px solid var(--border);
+    align-items: start; transition: border-color 0.2s ease;
+  }
+  .ap-skill-row:hover { border-color: var(--border-strong); }
+  .ap-skill-row:last-child { border-bottom: 1px solid var(--border); }
+  @media (max-width: 680px) { .ap-skill-row { grid-template-columns: 1fr; gap: 10px; } }
+  .ap-skill-cat {
+    font-family: 'JetBrains Mono', monospace; font-size: 10.5px;
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em;
+    padding-top: 4px;
+  }
+  .ap-pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ap-pill {
+    font-size: 0.81rem; padding: 5px 12px; border-radius: 100px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    color: var(--paper); transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .ap-pill:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* ── Experience ── */
+  .ap-timeline { display: flex; flex-direction: column; gap: 0; }
+  .ap-tl-item {
+    display: grid; grid-template-columns: 80px 1fr;
+    gap: 40px; padding: 36px 0;
+    border-top: 1px solid var(--border);
+    transition: border-color 0.2s ease;
+  }
+  .ap-tl-item:hover { border-color: var(--border-strong); }
+  .ap-tl-item:last-child { border-bottom: 1px solid var(--border); }
+  @media (max-width: 640px) { .ap-tl-item { grid-template-columns: 1fr; gap: 12px; } }
+  .ap-tl-year {
+    font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700;
+    color: var(--gray-2); letter-spacing: -0.03em; line-height: 1;
+    padding-top: 4px;
+    transition: color 0.2s ease;
+  }
+  .ap-tl-item:hover .ap-tl-year { color: var(--accent); }
+  .ap-tl-body h3 {
+    font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
+    color: var(--paper); margin-bottom: 6px; letter-spacing: -0.02em;
+  }
+  .ap-tl-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .ap-company { font-weight: 600; color: var(--accent); font-size: 0.88rem; }
+  .ap-tl-period { font-size: 0.82rem; color: var(--gray-2); font-family: 'JetBrains Mono', monospace; }
+  .ap-tl-body ul {
+    padding-left: 16px; color: var(--gray-1); font-size: 0.91rem;
+    display: flex; flex-direction: column; gap: 6px; line-height: 1.6;
+  }
+
+  /* ── Contact ── */
+  .ap-contact-section { background: var(--surface); }
+  .ap-contact-body { max-width: 640px; }
+  .ap-contact-body > p { color: var(--gray-1); font-size: 1rem; line-height: 1.7; margin-bottom: 32px; }
+
+  .ap-contact-links { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  .ap-contact-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 0.95rem; font-weight: 500; color: var(--paper);
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    transition: color 0.2s ease, border-color 0.2s ease, gap 0.2s ease;
+  }
+  .ap-contact-link:hover { color: var(--accent); border-color: var(--accent); gap: 14px; }
+
+  .ap-compose-box { display: flex; flex-direction: column; gap: 14px; }
+  .ap-compose-fields { display: flex; gap: 12px; }
+  @media (max-width: 540px) { .ap-compose-fields { flex-direction: column; } }
+  .ap-input {
+    flex: 1; background: var(--surface-2); border: 1px solid var(--border-strong);
+    border-radius: 10px; padding: 12px 16px;
+    color: var(--paper); font-family: 'Inter', sans-serif; font-size: 0.88rem; outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .ap-input:focus { border-color: var(--accent); }
+  .ap-input::placeholder { color: var(--gray-2); }
+  .ap-compose-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ap-compose-note { font-size: 0.76rem; color: var(--gray-2); font-style: italic; margin: 0; }
+
+  /* ── Footer ── */
+  .ap-footer {
+    padding: 32px 0 44px;
+    text-align: center; color: var(--gray-2); font-size: 0.78rem;
+    font-family: 'JetBrains Mono', monospace;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Lightbox ── */
+  .ap-lightbox-backdrop {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(44,33,23,0.88);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .ap-lightbox-content {
+    position: relative; max-width: 92vw; max-height: 88vh;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .ap-lightbox-img {
+    max-width: 90vw; max-height: 80vh; object-fit: contain;
+    border-radius: 10px; box-shadow: 0 24px 60px rgba(0,0,0,0.9);
+    border: 1px solid var(--border-strong);
+  }
+  .ap-lightbox-close {
+    position: fixed; top: 20px; right: 20px;
+    background: var(--surface-2); border: 1px solid var(--border-strong);
+    color: var(--paper); border-radius: 50%; width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; z-index: 1001;
+  }
+  .ap-lightbox-close:hover { background: var(--accent); color: var(--ink); transform: scale(1.08); }
+  .ap-lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: var(--surface-2); border: 1px solid var(--border-strong);
+    color: var(--paper); border-radius: 50%; width: 46px; height: 46px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; z-index: 1001;
+  }
+  .ap-lightbox-prev { left: -58px; }
+  .ap-lightbox-next { right: -58px; }
+  .ap-lightbox-nav:hover { background: var(--accent); color: var(--ink); transform: translateY(-50%) scale(1.08); }
+  @media (max-width: 768px) {
+    .ap-lightbox-prev { left: 8px; }
+    .ap-lightbox-next { right: 8px; }
+    .ap-lightbox-close { top: 12px; right: 12px; }
+  }
+  .ap-lightbox-caption {
+    margin-top: 14px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; color: var(--gray-1);
+    background: var(--surface-2); padding: 4px 14px; border-radius: 100px;
+    border: 1px solid var(--border);
   }
 `;
