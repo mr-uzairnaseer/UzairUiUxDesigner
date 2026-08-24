@@ -221,56 +221,65 @@ function HeroCanvas({ reduceMotion }) {
     const camera = new PerspectiveCamera(55, 1, 0.1, 100);
     camera.position.z = 6;
 
-    /* Wireframe icosahedron */
-    const icoGeo = new IcosahedronGeometry(2.2, 1);
+    /* Outer wireframe icosahedron (Green Moss #857946) */
+    const icoGeo = new IcosahedronGeometry(2.3, 1);
     const icoMat = new MeshBasicMaterial({
-      color: 0xC0440A,
+      color: 0x857946,
       wireframe: true,
       transparent: true,
-      opacity: 0.12,
+      opacity: 0.28,
     });
     const ico = new Mesh(icoGeo, icoMat);
     scene.add(ico);
 
-    /* Ember particle cloud */
-    const COUNT = 420;
+    /* Inner core wireframe icosahedron (Kombu Green #3A4032) */
+    const innerGeo = new IcosahedronGeometry(1.3, 0);
+    const innerMat = new MeshBasicMaterial({
+      color: 0x3A4032,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.38,
+    });
+    const innerIco = new Mesh(innerGeo, innerMat);
+    scene.add(innerIco);
+
+    /* Ember particle cloud (Green Moss #857946) */
+    const COUNT = 480;
     const pos = new Float32Array(COUNT * 3);
-    const sizes = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
-      const r = 2.8 + Math.random() * 1.6;
+      const r = 2.4 + Math.random() * 2.2;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       pos[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       pos[i * 3 + 2] = r * Math.cos(phi);
-      sizes[i] = Math.random();
     }
     const ptGeo = new BufferGeometry();
     ptGeo.setAttribute("position", new BufferAttribute(pos, 3));
     const ptMat = new PointsMaterial({
-      color: 0xC0440A,
-      size: 0.026,
+      color: 0x857946,
+      size: 0.035,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.65,
       sizeAttenuation: true,
     });
     const points = new Points(ptGeo, ptMat);
     scene.add(points);
 
-    /* Second ring of faint paper particles */
-    const pos2 = new Float32Array(240 * 3);
-    for (let i = 0; i < 240; i++) {
-      pos2[i * 3]     = (Math.random() - 0.5) * 12;
-      pos2[i * 3 + 1] = (Math.random() - 0.5) * 12;
-      pos2[i * 3 + 2] = (Math.random() - 0.5) * 6;
+    /* Deep forest ambient particle field (Kombu Green #3A4032) */
+    const pos2 = new Float32Array(280 * 3);
+    for (let i = 0; i < 280; i++) {
+      pos2[i * 3]     = (Math.random() - 0.5) * 16;
+      pos2[i * 3 + 1] = (Math.random() - 0.5) * 16;
+      pos2[i * 3 + 2] = (Math.random() - 0.5) * 8;
     }
     const ptGeo2 = new BufferGeometry();
     ptGeo2.setAttribute("position", new BufferAttribute(pos2, 3));
     const ptMat2 = new PointsMaterial({
-      color: 0x8B6E4E,
-      size: 0.015,
+      color: 0x3A4032,
+      size: 0.022,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.45,
     });
     const points2 = new Points(ptGeo2, ptMat2);
     scene.add(points2);
@@ -282,7 +291,7 @@ function HeroCanvas({ reduceMotion }) {
     };
     window.addEventListener("mousemove", onMouse);
 
-    /* Scroll driven Three.js animation tracking */
+    /* Scroll tracking */
     let targetScroll = 0;
     let currentScroll = 0;
     const onScroll = () => {
@@ -306,30 +315,36 @@ function HeroCanvas({ reduceMotion }) {
       raf = requestAnimationFrame(tick);
       t += 0.004;
 
-      // Smooth scroll interpolation (60fps lerp)
-      currentScroll += (targetScroll - currentScroll) * 0.075;
+      // Smooth scroll interpolation (lerp)
+      currentScroll += (targetScroll - currentScroll) * 0.08;
 
-      // Icosahedron scroll tumble & drift
-      ico.rotation.x = t * 0.28 + my * 0.08 + currentScroll * 0.0022;
-      ico.rotation.y = t * 0.42 + mx * 0.08 + currentScroll * 0.0032;
-      ico.rotation.z = currentScroll * 0.0012;
-      ico.position.y = -currentScroll * 0.0022;
-      ico.position.x = Math.sin(currentScroll * 0.001) * 0.8;
+      // Shape stays visible in viewport at all times, gracefully oscillating and shifting
+      const driftY = Math.sin(currentScroll * 0.0012) * 1.1 + Math.sin(t * 0.6) * 0.2;
+      const driftX = Math.sin(currentScroll * 0.0008 + 0.6) * 1.6 + mx * 0.35;
 
-      // Ember particles orbital scroll dispersion
-      points.rotation.y = t * 0.09 + currentScroll * 0.0016;
-      points.rotation.x = t * 0.04 + currentScroll * 0.001;
-      points.position.y = -currentScroll * 0.0018;
-      points.position.z = Math.sin(currentScroll * 0.0008) * 2.0;
+      ico.position.y = driftY;
+      ico.position.x = driftX;
+      ico.rotation.x = t * 0.22 + my * 0.08 + currentScroll * 0.0025;
+      ico.rotation.y = t * 0.35 + mx * 0.08 + currentScroll * 0.0035;
+      ico.rotation.z = currentScroll * 0.0015;
 
-      // Faint field counter-rotation
-      points2.rotation.y = -t * 0.05 - currentScroll * 0.0009;
+      innerIco.position.y = driftY;
+      innerIco.position.x = driftX;
+      innerIco.rotation.x = -t * 0.32 - currentScroll * 0.002;
+      innerIco.rotation.y = -t * 0.45 + currentScroll * 0.003;
+
+      // Particles orbit and drift with the shape across sections
+      points.position.x = driftX * 0.7;
+      points.position.y = driftY * 0.7;
+      points.rotation.y = t * 0.08 + currentScroll * 0.0018;
+      points.rotation.x = t * 0.05 + currentScroll * 0.0012;
+
+      // Ambient field counter-rotation
+      points2.rotation.y = -t * 0.04 - currentScroll * 0.0008;
       points2.rotation.x = currentScroll * 0.0005;
-      points2.position.y = -currentScroll * 0.0012;
 
-      // Scroll-linked camera dolly
-      camera.position.z = 6 + Math.sin(currentScroll * 0.0006) * 1.1;
-      camera.position.y = -currentScroll * 0.0008;
+      // Camera stays focused with subtle breath dolly
+      camera.position.z = 6 + Math.sin(currentScroll * 0.0006) * 0.5;
 
       renderer.render(scene, camera);
     };
@@ -342,6 +357,7 @@ function HeroCanvas({ reduceMotion }) {
       ro.disconnect();
       renderer.dispose();
       icoGeo.dispose(); icoMat.dispose();
+      innerGeo.dispose(); innerMat.dispose();
       ptGeo.dispose(); ptMat.dispose();
       ptGeo2.dispose(); ptMat2.dispose();
     };
@@ -779,9 +795,12 @@ export default function App() {
   const [cName, setCName]         = useState("");
   const [cMsg, setCMsg]           = useState("");
   const [menuOpen, setMenuOpen]   = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+  const [navScrolled, setNavScrolled] = useState(false);
 
   const heroRef      = useRef(null);
   const reduceMotion = useRef(false);
+  const scrollBarRef = useRef(null);
 
   const handleGmail = () => {
     const sub  = encodeURIComponent("Portfolio contact");
@@ -795,6 +814,20 @@ export default function App() {
 
   useEffect(() => {
     reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  /* Scroll progress + nav shadow */
+  useEffect(() => {
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const scrolled = doc.scrollTop || document.body.scrollTop;
+      const total = doc.scrollHeight - doc.clientHeight;
+      const pct = total > 0 ? (scrolled / total) * 100 : 0;
+      setScrollPct(pct);
+      setNavScrolled(scrolled > 10);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   /* Lightbox keyboard */
@@ -896,10 +929,20 @@ export default function App() {
     <div className="ap-root">
       <style>{CSS}</style>
 
+      {/* Scroll progress bar */}
+      <div
+        className="ap-scroll-progress"
+        style={{ width: `${scrollPct}%` }}
+        aria-hidden="true"
+      />
+
       <CustomCursor />
 
+      {/* Global persistent 3D animated background */}
+      <HeroCanvas reduceMotion={reduceMotion.current} />
+
       {/* NAV */}
-      <header className="ap-nav">
+      <header className={`ap-nav${navScrolled ? " scrolled" : ""}`}>
         <div className="ap-nav-left">
           <span className="ap-dot" />
           <span className="ap-nav-status">open to opportunities</span>
@@ -953,8 +996,6 @@ export default function App() {
         onMouseMove={handleHeroMove}
         onMouseLeave={resetTilt}
       >
-        <HeroCanvas reduceMotion={reduceMotion.current} />
-
         <div className="ap-wrap ap-hero-inner">
           <div className="ap-hero-top sr-group">
             <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
@@ -1322,16 +1363,16 @@ const CSS = `
 
   /* ── Variables ── */
   .ap-root {
-    --ink:         #FAF6EF;
-    --paper:       #2C2117;
-    --gray-1:      #6B5A46;
-    --gray-2:      #9C8A75;
-    --surface:     #F2EDE4;
-    --surface-2:   #E8E0D4;
-    --border:      rgba(44,33,23,0.10);
-    --border-strong: rgba(44,33,23,0.20);
-    --accent:      #C0440A;
-    --accent-soft: rgba(192,68,10,0.12);
+    --ink:         #F5F4F0;
+    --paper:       #3A4032;
+    --gray-1:      #5C6249;
+    --gray-2:      #8E9275;
+    --surface:     #ECEEE6;
+    --surface-2:   #E0E3D6;
+    --border:      rgba(58,64,50,0.10);
+    --border-strong: rgba(58,64,50,0.22);
+    --accent:      #857946;
+    --accent-soft: rgba(133,121,70,0.12);
 
     background: var(--ink);
     color: var(--paper);
@@ -1369,16 +1410,33 @@ const CSS = `
   .ap-wrap { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
   @media (max-width: 640px) { .ap-wrap { padding: 0 20px; } }
 
+  /* ── Scroll progress bar ── */
+  .ap-scroll-progress {
+    position: fixed; top: 52px; left: 0; z-index: 99;
+    height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--accent), #aaa86a, var(--accent));
+    background-size: 200% 100%;
+    animation: progress-shimmer 2.5s linear infinite;
+    transition: width 0.08s linear;
+    pointer-events: none;
+  }
+  @keyframes progress-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
   /* ── Navigation ── */
   .ap-nav {
-    position: sticky; top: 0; z-index: 100;
+    position: fixed; top: 0; left: 0; right: 0; width: 100%; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 32px;
-    background: rgba(250,246,239,0.97);
+    background: rgba(245,244,240,0.95);
     border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
     font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
     height: 52px; gap: 16px;
+    transition: box-shadow 0.3s ease;
+  }
+  .ap-nav.scrolled {
+    box-shadow: 0 2px 24px rgba(58,64,50,0.10);
   }
   @media (max-width: 640px) { .ap-nav { padding: 0 20px; } }
 
@@ -1415,9 +1473,9 @@ const CSS = `
   }
   .ap-mobile-menu {
     position: absolute; top: 100%; left: 0; right: 0;
-    background: #F2EDE4; border-bottom: 1px solid var(--border-strong);
+    background: #ECEEE6; border-bottom: 1px solid var(--border-strong);
     padding: 16px 32px; display: flex; flex-direction: column; gap: 12px;
-    box-shadow: 0 20px 40px rgba(100,70,40,0.15); z-index: 99;
+    box-shadow: 0 20px 40px rgba(58,64,50,0.15); z-index: 99;
   }
   .ap-mobile-link {
     color: var(--gray-1); font-size: 13px; padding: 6px 0;
@@ -1433,19 +1491,46 @@ const CSS = `
 
   /* ── Scroll reveal system ── */
   .sr-child {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22,1,0.36,1);
   }
-  .sr-item {
+  .sr-group.sr-visible .sr-child {
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sr-group.sr-visible .sr-child:nth-child(1) { transition-delay: 0s; }
+  .sr-group.sr-visible .sr-child:nth-child(2) { transition-delay: 0.1s; }
+  .sr-group.sr-visible .sr-child:nth-child(3) { transition-delay: 0.18s; }
+  .sr-group.sr-visible .sr-child:nth-child(4) { transition-delay: 0.26s; }
+  .sr-group.sr-visible .sr-child:nth-child(5) { transition-delay: 0.34s; }
+
+  .sr-item {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sr-item.sr-item-in {
+    opacity: 1;
+    transform: translateY(0);
   }
 
+  /* Slide-from-left / right for why & experience items */
+  .sr-slide-left {
+    opacity: 0; transform: translateX(-36px);
+    transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sr-slide-left.sr-item-in { opacity: 1; transform: translateX(0); }
+
+  .sr-slide-right {
+    opacity: 0; transform: translateX(36px);
+    transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22,1,0.36,1);
+  }
+  .sr-slide-right.sr-item-in { opacity: 1; transform: translateX(0); }
+
   @media (prefers-reduced-motion: reduce) {
-    .sr-child, .sr-item {
-      transform: none !important;
+    .sr-child, .sr-item, .sr-slide-left, .sr-slide-right {
+      opacity: 1 !important; transform: none !important;
       transition: none !important;
     }
   }
@@ -1457,7 +1542,7 @@ const CSS = `
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 100px 0 80px;
+    padding: 152px 0 80px;
     overflow: hidden;
   }
   .ap-hero-canvas {
@@ -1465,7 +1550,7 @@ const CSS = `
     width: 100vw; height: 100vh;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.55;
+    opacity: 0.85;
   }
   .ap-hero-inner {
     position: relative; z-index: 1;
@@ -1479,7 +1564,11 @@ const CSS = `
     display: flex; align-items: center; gap: 10px;
     margin-bottom: 20px;
   }
-  .ap-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--accent); }
+  .ap-eyebrow::before {
+    content: ''; height: 1px; background: var(--accent);
+    width: 0; animation: eyebrow-line 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
+  }
+  @keyframes eyebrow-line { to { width: 28px; } }
   .ap-eyebrow-num { font-weight: 500; }
 
   .ap-h1 {
@@ -1533,7 +1622,7 @@ const CSS = `
     letter-spacing: 0.01em;
   }
   .ap-btn-primary { background: var(--accent); color: var(--ink); border-color: var(--accent); }
-  .ap-btn-primary:hover { transform: translateY(-2px) skewX(-2deg); background: #ff654e; }
+  .ap-btn-primary:hover { transform: translateY(-2px) skewX(-2deg); background: #9e9054; }
   .ap-btn-ghost { border-color: var(--border-strong); color: var(--paper); }
   .ap-btn-ghost:hover { transform: translateY(-2px) skewX(-2deg); border-color: var(--accent); background: var(--accent-soft); }
 
@@ -1542,6 +1631,13 @@ const CSS = `
     font-family: 'Fraunces', serif;
     font-size: 2rem; font-weight: 700; line-height: 1;
     color: var(--paper);
+    animation: float-num 4s ease-in-out infinite;
+  }
+  .ap-stat-row > div:nth-child(2) .ap-num { animation-delay: 0.8s; }
+  .ap-stat-row > div:nth-child(3) .ap-num { animation-delay: 1.6s; }
+  @keyframes float-num {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
   }
   .ap-label {
     font-size: 0.72rem; color: var(--gray-2);
@@ -1552,20 +1648,20 @@ const CSS = `
   .ap-phone-stage { display: flex; justify-content: center; }
   .ap-phone {
     width: 232px; height: 476px; border-radius: 36px;
-    background: var(--surface); border: 7px solid #BFB5A8;
+    background: var(--surface); border: 7px solid #8E9275;
     position: relative; overflow: hidden;
-    box-shadow: 0 40px 80px -20px rgba(100,70,40,0.3), 0 0 0 1px var(--border-strong);
+    box-shadow: 0 40px 80px -20px rgba(58,64,50,0.3), 0 0 0 1px var(--border-strong);
     transform-style: preserve-3d; transition: transform 0.1s ease-out;
   }
   .ap-phone::before {
     content: ''; position: absolute;
     top: 0; left: 50%; transform: translateX(-50%);
-    width: 80px; height: 18px; background: #BFB5A8;
+    width: 80px; height: 18px; background: #8E9275;
     border-radius: 0 0 12px 12px; z-index: 5;
   }
   .ap-phone-screen {
     position: absolute; inset: 0;
-    padding: 30px 12px 14px; background: #EFE9DF;
+    padding: 30px 12px 14px; background: #E8EAE0;
     display: flex; flex-direction: column; gap: 7px;
   }
   .ap-phone-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
@@ -1576,7 +1672,7 @@ const CSS = `
     max-width: 76%; padding: 9px 13px; border-radius: 14px;
     font-size: 10.5px; opacity: 0; animation: bpop 0.45s ease forwards;
   }
-  .ap-in  { align-self: flex-start; background: #DDD5C8; color: var(--paper); border-bottom-left-radius: 4px; }
+  .ap-in  { align-self: flex-start; background: #CBD0BE; color: var(--paper); border-bottom-left-radius: 4px; }
   .ap-out { align-self: flex-end; background: var(--accent); color: var(--ink); font-weight: 500; border-bottom-right-radius: 4px; }
   .ap-bubble:nth-of-type(1) { animation-delay: 0.5s; }
   .ap-bubble:nth-of-type(2) { animation-delay: 1.2s; }
@@ -1585,7 +1681,7 @@ const CSS = `
   @keyframes bpop { from { opacity:0; transform:translateY(6px) scale(0.96); } to { opacity:1; transform:none; } }
   .ap-typing {
     display: flex; gap: 3px; align-self: flex-start;
-    background: #DDD5C8; padding: 9px 12px; border-radius: 14px;
+    background: #CBD0BE; padding: 9px 12px; border-radius: 14px;
     border-bottom-left-radius: 4px; opacity: 0;
     animation: bpop 0.45s ease forwards; animation-delay: 3.2s;
   }
@@ -1599,10 +1695,13 @@ const CSS = `
     overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
     padding: 11px 0;
     font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gray-2);
+    background: rgba(245,244,240,0.75);
+    backdrop-filter: blur(4px);
+    position: relative; z-index: 1;
   }
   .ap-marquee-track {
     display: flex; width: max-content; white-space: nowrap;
-    animation: marquee 32s linear infinite;
+    animation: marquee 28s linear infinite;
   }
   .ap-marquee-wrap:hover .ap-marquee-track { animation-play-state: paused; }
   @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -1611,7 +1710,11 @@ const CSS = `
   }
 
   /* ── Section base ── */
-  .ap-section { padding: 110px 0; }
+  .ap-section {
+    padding: 110px 0;
+    position: relative;
+    background: transparent;
+  }
   @media (max-width: 720px) { .ap-section { padding: 72px 0; } }
 
   .ap-section-head { margin-bottom: 56px; }
@@ -1660,7 +1763,7 @@ const CSS = `
   .ap-edu-row-last { border-top: none; padding-top: 6px; }
 
   /* ── Why — numbered editorial list ── */
-  .ap-why-section { background: var(--surface); }
+  .ap-why-section { background: rgba(236,238,230,0.50); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
   .ap-why-list { display: flex; flex-direction: column; }
   .ap-why-item {
     display: grid; grid-template-columns: 80px 1fr;
@@ -1678,8 +1781,8 @@ const CSS = `
     font-family: 'Fraunces', serif; font-size: 3.5rem; font-weight: 700;
     line-height: 1; color: var(--surface);
     letter-spacing: -0.04em;
-    -webkit-text-stroke: 1px var(--border-strong);
-    text-stroke: 1px var(--border-strong);
+    -webkit-text-stroke: 1.5px var(--border-strong);
+    text-stroke: 1.5px var(--border-strong);
     user-select: none;
     transition: color 0.2s ease, -webkit-text-stroke-color 0.2s ease;
   }
@@ -1707,8 +1810,8 @@ const CSS = `
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
   }
   .ap-craft-card:hover {
-    border-color: rgba(192,68,10,0.3);
-    box-shadow: 0 16px 36px -10px rgba(100,70,40,0.2);
+    border-color: rgba(133,121,70,0.35);
+    box-shadow: 0 16px 36px -10px rgba(58,64,50,0.2);
   }
   .ap-craft-header-bar {
     display: flex; justify-content: space-between; align-items: center;
@@ -1745,12 +1848,12 @@ const CSS = `
     color: var(--paper); font-weight: 600; font-size: 0.88rem; cursor: pointer;
     transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
     font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 10px;
-    box-shadow: 0 8px 24px rgba(255,74,46,0.15);
+    box-shadow: 0 8px 24px rgba(133,121,70,0.18);
   }
-  .ap-mag-btn:hover { background: var(--accent-soft); box-shadow: 0 12px 30px rgba(255,74,46,0.25); }
+  .ap-mag-btn:hover { background: var(--accent-soft); box-shadow: 0 12px 30px rgba(133,121,70,0.28); }
   .ap-mag-pill-tag {
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    color: var(--accent); background: rgba(255,74,46,0.18);
+    color: var(--accent); background: rgba(133,121,70,0.18);
     padding: 2px 8px; border-radius: 100px;
   }
 
@@ -1762,7 +1865,7 @@ const CSS = `
   }
   .ap-swatch-label {
     font-family: 'JetBrains Mono', monospace; font-size: 11px;
-    background: rgba(250,246,239,0.88); padding: 5px 14px;
+    background: rgba(245,244,240,0.88); padding: 5px 14px;
     border-radius: 100px; color: var(--paper);
     border: 1px solid var(--border-strong);
   }
@@ -1867,31 +1970,31 @@ const CSS = `
   }
   .ap-card:hover {
     transform: translateY(-5px);
-    border-color: rgba(192,68,10,0.35);
-    box-shadow: 0 20px 40px -12px rgba(100,70,40,0.22), 0 0 22px rgba(192,68,10,0.12);
+    border-color: rgba(133,121,70,0.40);
+    box-shadow: 0 20px 40px -12px rgba(58,64,50,0.22), 0 0 22px rgba(133,121,70,0.14);
   }
   .ap-shot { aspect-ratio: 16/10; width: 100%; position: relative; overflow: hidden; background: var(--surface-2); }
   .ap-shot-main { width: 100%; height: 100%; object-fit: cover; display: block; cursor: zoom-in; transition: transform 0.4s ease; }
   .ap-card:hover .ap-shot-main { transform: scale(1.03); }
   .ap-shot-badge {
     position: absolute; top: 10px; right: 10px;
-    background: rgba(250,246,239,0.90); color: var(--gray-1);
+    background: rgba(245,244,240,0.90); color: var(--gray-1);
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
     padding: 3px 9px; border-radius: 100px; border: 1px solid var(--border);
     pointer-events: none; z-index: 3;
   }
   .ap-shot-nav {
     position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 12px;
-    background: rgba(250,246,239,0.90);
+    background: rgba(245,244,240,0.90);
     display: flex; justify-content: center; align-items: center; z-index: 3;
   }
   .ap-shot-dots { display: flex; gap: 6px; align-items: center; }
   .ap-shot-dot {
     width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(44,33,23,0.25); border: none; padding: 0; cursor: pointer;
+    background: rgba(58,64,50,0.25); border: none; padding: 0; cursor: pointer;
     transition: all 0.2s ease;
   }
-  .ap-shot-dot:hover { background: rgba(44,33,23,0.55); }
+  .ap-shot-dot:hover { background: rgba(58,64,50,0.55); }
   .ap-shot-dot.active { background: var(--accent); width: 16px; border-radius: 100px; }
   .ap-shot-thumbs { display: flex; gap: 5px; overflow-x: auto; max-width: 100%; padding: 2px 4px; scrollbar-width: none; }
   .ap-shot-thumbs::-webkit-scrollbar { display: none; }
@@ -1994,7 +2097,7 @@ const CSS = `
   }
 
   /* ── Contact ── */
-  .ap-contact-section { background: var(--surface); }
+  .ap-contact-section { background: rgba(236,238,230,0.50); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
   .ap-contact-body { max-width: 640px; }
   .ap-contact-body > p { color: var(--gray-1); font-size: 1rem; line-height: 1.7; margin-bottom: 32px; }
 
@@ -2027,12 +2130,15 @@ const CSS = `
     text-align: center; color: var(--gray-2); font-size: 0.78rem;
     font-family: 'JetBrains Mono', monospace;
     border-top: 1px solid var(--border);
+    background: rgba(236,238,230,0.55);
+    backdrop-filter: blur(4px);
+    position: relative;
   }
 
   /* ── Lightbox ── */
   .ap-lightbox-backdrop {
     position: fixed; inset: 0; z-index: 1000;
-    background: rgba(44,33,23,0.88);
+    background: rgba(30,34,26,0.90);
     display: flex; align-items: center; justify-content: center; padding: 24px;
   }
   .ap-lightbox-content {
