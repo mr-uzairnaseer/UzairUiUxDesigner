@@ -169,7 +169,7 @@ const WHY_ITEMS = [
   },
   {
     title: "Real World Experience",
-    desc: "Through my TCCI internship, I contributed to production oriented digital platforms and worked with complex requirements, dashboards, role based interfaces, and database driven systems.",
+    desc: "Through my MMSC internship, I contributed to production-oriented digital platforms and worked with complex user requirements, translating them into intuitive dashboards and engaging role-based interfaces.",
   },
   {
     title: "Problem Solver",
