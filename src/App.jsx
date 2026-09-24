@@ -1202,46 +1202,32 @@ export default function App() {
 
           <div className="ap-timeline sr-stagger">
             <div className="ap-tl-item sr-item">
-              <div className="ap-tl-year">2026</div>
+              <div className="ap-tl-year">Recent</div>
               <div className="ap-tl-body">
-                <h3>UI/UX &amp; Frontend Development Intern</h3>
+                <h3>UI/UX Designer</h3>
                 <div className="ap-tl-meta">
-                  <span className="ap-company">TCCI</span>
+                  <span className="ap-company">Tech Web Ninja</span>
+                  <span className="ap-tl-period">1 Year</span>
                 </div>
                 <ul>
-                  <li>Contributed to UI/UX design and frontend development of TCCI digital platforms, including the ORIC Database Portal and TCCI Live.</li>
-                  <li>Designed high fidelity interfaces, dashboards, authentication flows, and research and commercialization modules.</li>
-                  <li>Translated designs into responsive web interfaces using React/Next.js.</li>
+                  <li>Delivered full web design packages including wireframes, mockups, and high-fidelity prototypes.</li>
+                  <li>Created sleek, conversion-optimized designs with strong visual hierarchy and modern typography.</li>
+                  <li>Collaborated closely with clients to translate their vision into pixel-perfect web experiences.</li>
                 </ul>
               </div>
             </div>
 
             <div className="ap-tl-item sr-item">
-              <div className="ap-tl-year">2024</div>
+              <div className="ap-tl-year">Past</div>
               <div className="ap-tl-body">
-                <h3>Content Writer</h3>
+                <h3>UI/UX Intern</h3>
                 <div className="ap-tl-meta">
-                  <span className="ap-company">Fiesta Consultants</span>
-                  <span className="ap-tl-period">Aug 2024 to Dec 2025</span>
+                  <span className="ap-company">MMSC</span>
+                  <span className="ap-tl-period">3 Months</span>
                 </div>
                 <ul>
-                  <li>Created original, plagiarism free content tailored to diverse client briefs.</li>
-                  <li>Designed engaging presentations and visual assets using Canva.</li>
-                  <li>Collaborated directly with clients to translate requirements into delivered work.</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="ap-tl-item sr-item">
-              <div className="ap-tl-year">2024</div>
-              <div className="ap-tl-body">
-                <h3>C++ Intern</h3>
-                <div className="ap-tl-meta">
-                  <span className="ap-company">HiSkyTech</span>
-                  <span className="ap-tl-period">Jul 2024 to Aug 2024</span>
-                </div>
-                <ul>
-                  <li>Applied core C++ concepts and worked with libraries in scenario based application development.</li>
+                  <li>Revamped the digital platform focusing on clear navigation and modern aesthetics.</li>
+                  <li>Improved user journeys and interaction flows for educational and medical resources.</li>
                 </ul>
               </div>
             </div>
