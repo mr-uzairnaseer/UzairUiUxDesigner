@@ -1021,8 +1021,8 @@ export default function App() {
               </div>
               <div className="ap-stat-row">
                 <div><div className="ap-num">9+</div><div className="ap-label">projects delivered</div></div>
-                <div><div className="ap-num">6th</div><div className="ap-label">semester, BSCS</div></div>
-                <div><div className="ap-num">3.29</div><div className="ap-label">CGPA</div></div>
+                <div><div className="ap-num">1+</div><div className="ap-label">years experience</div></div>
+                <div><div className="ap-num">2025</div><div className="ap-label">graduated</div></div>
               </div>
             </div>
 
@@ -1100,12 +1100,12 @@ export default function App() {
                 <GraduationCap size={13} /> education
               </span>
               <h3 className="sr-child" style={{ "--i": 1 }}>BS Computer Science</h3>
-              <div className="ap-school sr-child" style={{ "--i": 2 }}>Air University, Multan Campus</div>
+              <div className="ap-school sr-child" style={{ "--i": 2 }}>Quaid-I-Azam University, Islamabad</div>
               <div className="ap-edu-row sr-child" style={{ "--i": 3 }}>
-                <span>Aug 2023 to Jun 2027</span><b>6th Semester</b>
+                <span>Graduated</span><b>2025</b>
               </div>
               <div className="ap-edu-row ap-edu-row-last sr-child" style={{ "--i": 4 }}>
-                <span>CGPA</span><b>3.29</b>
+                <span>Experience</span><b>1 Year</b>
               </div>
             </div>
           </div>
