@@ -140,13 +140,11 @@ const PROJECTS = [
 ];
 
 const SKILLS = [
-  { label: "Languages", items: ["Dart", "JavaScript", "C#", "SQL"] },
-  { label: "Frameworks & Tools", items: ["Flutter", "React", "Next.js", "TypeScript", "Firebase", "Supabase", ".NET"] },
-  { label: "UI/UX & Design", items: ["Figma", "Canva", "Interface Design", "Responsive Layouts"] },
-  { label: "Web Development", items: ["HTML", "CSS", "Tailwind CSS", "React", "JavaScript"] },
-  { label: "Backend & Database", items: ["Node.js", "Express", "Firebase Realtime DB", "MySQL", "SQL Server"] },
-  { label: "Tools & Platforms", items: ["Git", "GitHub"] },
-  { label: "Core Concepts", items: ["OOP", "Data Structures", "API Integration", "REST APIs"] },
+  { label: "Design & Prototyping Tools", items: ["Figma", "Adobe XD", "Illustrator", "Photoshop", "Canva"] },
+  { label: "UI/UX Competencies", items: ["User-Centered Design", "Design Thinking", "Wireframing", "Prototyping", "User Research", "Usability Testing", "Interaction Design", "Responsive Design"] },
+  { label: "Graphic Design", items: ["Branding", "Visual Identity", "Logo & Icon Design", "Typography", "Color Theory", "Illustration"] },
+  { label: "Development", items: ["HTML", "CSS", "Basic Frontend Knowledge"] },
+  { label: "Additional Skills", items: ["Design Systems", "Cross-Functional Collaboration", "Storytelling", "Problem-Solving", "Analytical Thinking", "Time Management"] },
 ];
 
 const TOP_NAV = [
@@ -161,8 +159,8 @@ const TOP_NAV = [
 
 const WHY_ITEMS = [
   {
-    title: "Design + Development",
-    desc: "I understand both sides of the product, from user flows and high fidelity UI designs in Figma to implementing responsive interfaces with modern frontend technologies.",
+    title: "User-Centered Approach",
+    desc: "I understand the psychology behind user flows and interactions. From initial wireframes to high-fidelity prototypes in Figma, my focus is always on usability and empathy.",
   },
   {
     title: "Real World Experience",
@@ -1002,8 +1000,8 @@ export default function App() {
               Hi, I'm Uzair Naseer
             </div>
             <h1 className="ap-h1 sr-child" style={{ "--i": 1 }}>
-              UI/UX Designer &amp;<br />
-              <span className="ap-accent">Frontend Developer</span>
+              UI/UX<br />
+              <span className="ap-accent">Designer</span>
             </h1>
           </div>
 
@@ -1013,7 +1011,7 @@ export default function App() {
                 I design intuitive digital experiences and turn them into responsive, functional web interfaces.
               </p>
               <div className="ap-hero-tech">
-                Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS
+                Figma · Adobe XD · Illustrator · Photoshop · Canva · HTML/CSS
               </div>
               <div className="ap-cta-row">
                 <a href="#work" className="ap-btn ap-btn-primary">
@@ -1078,10 +1076,10 @@ export default function App() {
                 <span className="ap-accent-italic">driven by design.</span>
               </h2>
               <p className="sr-child" style={{ "--i": 2 }}>
-                <strong>I'm Uzair</strong>, graduated from Quaid-I-Azam University Islamabad having one year of experience as a UI/UX Designer &amp; Frontend Developer.
+                <strong>I'm Uzair</strong>, graduated from Quaid-I-Azam University Islamabad having one year of experience as a UI/UX Designer.
               </p>
               <p className="sr-child" style={{ "--i": 3 }}>
-                I work with Figma, React, Next.js, TypeScript, and Tailwind CSS, with backend experience in Node.js, Express, MongoDB, Firebase, and Supabase. I care about interfaces that are polished, accessible, and genuinely usable.
+                I specialize in Figma, Adobe XD, and Illustrator to create polished, accessible, and genuinely usable interfaces. My process revolves around User-Centered Design, rapid prototyping, and ensuring pixel-perfect visual identities.
               </p>
             </div>
 
@@ -1159,7 +1157,7 @@ export default function App() {
             <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
               <span className="ap-eyebrow-num">05</span> toolkit
             </div>
-            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>What I build with.</h2>
+            <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>Expertise.</h2>
           </div>
 
           <div className="ap-skills-table sr-stagger">
