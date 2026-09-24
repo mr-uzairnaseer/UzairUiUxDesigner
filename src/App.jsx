@@ -807,7 +807,7 @@ export default function App() {
   };
   const handleWhatsApp = () => {
     const t = cName || cMsg ? `Hi Uzair, I'm ${cName}. ${cMsg}` : "Hi Uzair, I'd like to get in touch!";
-    window.open(`https://wa.me/923127108644?text=${encodeURIComponent(t)}`, "_blank");
+    window.open(`https://wa.me/923116877887?text=${encodeURIComponent(t)}`, "_blank");
   };
 
   useEffect(() => {
@@ -1265,8 +1265,8 @@ export default function App() {
               <a href="mailto:mr-uzairnaseer@example.com" className="ap-contact-link">
                 <Mail size={15} /> mr-uzairnaseer@example.com
               </a>
-              <a href="tel:+923127108644" className="ap-contact-link">
-                <Phone size={15} /> 0312 7108644
+              <a href="tel:+923116877887" className="ap-contact-link">
+                <Phone size={15} /> 0311 6877887
               </a>
               <a href="https://github.com/mr-uzairnaseer" target="_blank" rel="noopener noreferrer" className="ap-contact-link">
                 <Github size={15} /> github.com/mr-uzairnaseer
