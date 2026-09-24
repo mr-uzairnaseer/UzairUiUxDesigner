@@ -1100,7 +1100,7 @@ export default function App() {
                 <GraduationCap size={13} /> education
               </span>
               <h3 className="sr-child" style={{ "--i": 1 }}>BS Computer Science</h3>
-              <div className="ap-school sr-child" style={{ "--i": 2 }}>Quaid-I-Azam University, Islamabad</div>
+              <div className="ap-school sr-child" style={{ "--i": 2 }}>Quaid-I-Azam University<br/>Islamabad</div>
               <div className="ap-edu-row sr-child" style={{ "--i": 3 }}>
                 <span>Graduated</span><b>2025</b>
               </div>
@@ -1771,12 +1771,12 @@ const CSS = `
   }
   .ap-school { color: var(--gray-1); font-size: 0.88rem; margin-bottom: 14px; }
   .ap-edu-row {
-    display: flex; justify-content: space-between;
-    font-size: 0.83rem; color: var(--gray-2);
-    border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.85rem; color: var(--gray-2);
+    border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px;
   }
   .ap-edu-row b { color: var(--paper); }
-  .ap-edu-row-last { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+  .ap-edu-row-last { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
 
   /* ── Why — numbered editorial list ── */
   .ap-why-section { background: rgba(242,237,228,0.50); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
