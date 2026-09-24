@@ -317,8 +317,8 @@ function HeroCanvas({ reduceMotion }) {
       currentScroll += (targetScroll - currentScroll) * 0.08;
 
       // Shape stays visible in viewport at all times, gracefully oscillating and shifting
-      const driftY = Math.sin(currentScroll * 0.0012) * 1.1 + Math.sin(t * 0.6) * 0.2;
-      const driftX = Math.sin(currentScroll * 0.0008 + 0.6) * 1.6 + mx * 0.35;
+      const driftY = 0.8 + Math.sin(currentScroll * 0.0012) * 1.1 + Math.sin(t * 0.6) * 0.2;
+      const driftX = 1.0 + Math.sin(currentScroll * 0.0008 + 0.6) * 1.6 + mx * 0.35;
 
       ico.position.y = driftY;
       ico.position.x = driftX;
@@ -1565,7 +1565,7 @@ const CSS = `
   .ap-hero-inner {
     position: relative; z-index: 1;
   }
-  .ap-hero-top { margin-bottom: 52px; }
+  .ap-hero-top { margin-bottom: 24px; }
 
   .ap-eyebrow {
     font-family: 'JetBrains Mono', monospace;
