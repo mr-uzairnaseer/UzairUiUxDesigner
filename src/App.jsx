@@ -1056,9 +1056,21 @@ export default function App() {
       {/* MARQUEE */}
       <div className="ap-marquee-wrap" aria-label="Tech stack overview">
         <div className="ap-marquee-track">
-          <span>Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS · Flutter · Firebase · Supabase · Node.js</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
           <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
-          <span>Figma · React · Next.js · TypeScript · JavaScript · Tailwind CSS · Flutter · Firebase · Supabase · Node.js</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
+          <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
+          <span>Figma · Adobe XD · Illustrator · Photoshop · Canva · Wireframing · Prototyping · User Research · Interaction Design · HTML/CSS</span>
           <span aria-hidden="true" style={{ margin: "0 20px" }}>·</span>
         </div>
       </div>
