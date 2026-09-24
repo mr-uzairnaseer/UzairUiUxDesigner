@@ -1647,43 +1647,49 @@ const CSS = `
   /* ── Phone mockup ── */
   .ap-phone-stage { display: flex; justify-content: center; }
   .ap-phone {
-    width: 232px; height: 476px; border-radius: 36px;
-    background: var(--surface); border: 7px solid #9C8A75;
+    width: 240px; height: 490px; border-radius: 40px;
+    background: var(--surface); border: 8px solid var(--paper);
     position: relative; overflow: hidden;
-    box-shadow: 0 40px 80px -20px rgba(44,33,23,0.3), 0 0 0 1px var(--border-strong);
+    box-shadow: 
+      inset 0 0 0 1px rgba(255,255,255,0.1),
+      0 40px 80px -20px rgba(44,33,23,0.35), 
+      0 20px 40px -10px rgba(44,33,23,0.2);
     transform-style: preserve-3d; transition: transform 0.1s ease-out;
   }
   .ap-phone::before {
     content: ''; position: absolute;
     top: 0; left: 50%; transform: translateX(-50%);
-    width: 80px; height: 18px; background: #9C8A75;
-    border-radius: 0 0 12px 12px; z-index: 5;
+    width: 96px; height: 24px; background: var(--paper);
+    border-radius: 0 0 16px 16px; z-index: 5;
   }
   .ap-phone-screen {
     position: absolute; inset: 0;
-    padding: 30px 12px 14px; background: #EBE3D7;
-    display: flex; flex-direction: column; gap: 7px;
+    padding: 40px 14px 16px; background: var(--ink);
+    display: flex; flex-direction: column; gap: 8px;
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.03);
   }
   .ap-phone-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .ap-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
   .ap-name { font-size: 11px; font-weight: 600; color: var(--paper); }
   .ap-sub { font-size: 9px; color: var(--accent); }
   .ap-bubble {
-    max-width: 76%; padding: 9px 13px; border-radius: 14px;
-    font-size: 10.5px; opacity: 0; animation: bpop 0.45s ease forwards;
+    max-width: 78%; padding: 10px 14px; border-radius: 16px;
+    font-size: 11px; line-height: 1.4; opacity: 0; animation: bpop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    box-shadow: 0 4px 14px rgba(44,33,23,0.06);
   }
-  .ap-in  { align-self: flex-start; background: #D9CDBF; color: var(--paper); border-bottom-left-radius: 4px; }
-  .ap-out { align-self: flex-end; background: var(--accent); color: var(--ink); font-weight: 500; border-bottom-right-radius: 4px; }
+  .ap-in  { align-self: flex-start; background: var(--surface-2); color: var(--paper); border-bottom-left-radius: 4px; }
+  .ap-out { align-self: flex-end; background: linear-gradient(135deg, var(--accent), #D65518); color: white; font-weight: 500; border-bottom-right-radius: 4px; box-shadow: 0 6px 16px rgba(192,68,10,0.25); }
   .ap-bubble:nth-of-type(1) { animation-delay: 0.5s; }
   .ap-bubble:nth-of-type(2) { animation-delay: 1.2s; }
   .ap-bubble:nth-of-type(3) { animation-delay: 1.9s; }
   .ap-bubble:nth-of-type(4) { animation-delay: 2.6s; }
-  @keyframes bpop { from { opacity:0; transform:translateY(6px) scale(0.96); } to { opacity:1; transform:none; } }
+  @keyframes bpop { from { opacity:0; transform:translateY(8px) scale(0.95); } to { opacity:1; transform:none; } }
   .ap-typing {
-    display: flex; gap: 3px; align-self: flex-start;
-    background: #D9CDBF; padding: 9px 12px; border-radius: 14px;
+    display: flex; gap: 4px; align-self: flex-start;
+    background: var(--surface-2); padding: 10px 14px; border-radius: 16px;
     border-bottom-left-radius: 4px; opacity: 0;
-    animation: bpop 0.45s ease forwards; animation-delay: 3.2s;
+    box-shadow: 0 4px 14px rgba(44,33,23,0.06);
+    animation: bpop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; animation-delay: 3.2s;
   }
   .ap-typing span { width: 4px; height: 4px; border-radius: 50%; background: var(--gray-2); animation: blink 1.2s infinite; }
   .ap-typing span:nth-child(2) { animation-delay: 0.2s; }
