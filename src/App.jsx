@@ -1249,7 +1249,7 @@ export default function App() {
 
           <div className="ap-contact-body sr-group">
             <p className="sr-child" style={{ "--i": 2 }}>
-              I'm currently looking for internship and junior developer roles in Flutter, frontend, and UI/UX. If you've got a screen that needs designing or an app that needs building, I'd love to hear from you.
+              I'm currently looking for full-time UI/UX Designer roles and freelance design projects. If you've got a user journey that needs refining or a digital product that needs a beautiful, intuitive interface, I'd love to hear from you.
             </p>
 
             <div className="ap-contact-links sr-child" style={{ "--i": 3 }}>
