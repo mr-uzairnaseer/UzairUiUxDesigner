@@ -58,7 +58,7 @@ const PROJECTS = [
     years: "Jan to Mar 2026",
     desc: "A fully functional, WhatsApp style messaging app with real time chat, communities, and voice/video call UI backed by Firebase.",
     tags: ["Flutter", "Firebase", "Realtime DB"],
-    link: "https://github.com/aimahbilal1/Lets-chat",
+    link: "https://github.com/mr-uzairnaseer/Lets-chat",
     images: projectImages["lets-chat"] || projectImages["letschat"] || [],
   },
   {
@@ -67,7 +67,7 @@ const PROJECTS = [
     years: "2026",
     desc: "Complete food delivery frontend including onboarding, home feed, categories, cart, checkout, and order tracking, with smooth animations throughout.",
     tags: ["Flutter", "Dart"],
-    link: "https://github.com/aimahbilal1/Foodies-App",
+    link: "https://github.com/mr-uzairnaseer/Foodies-App",
     images: projectImages["foodies"] || [],
   },
   {
@@ -76,7 +76,7 @@ const PROJECTS = [
     years: "2026",
     desc: "A premium, dark themed expense tracker with spending analytics, savings plans, category breakdowns, and multi account management.",
     tags: ["Flutter", "Dart", "Charts"],
-    link: "https://github.com/aimahbilal1/Expensify",
+    link: "https://github.com/mr-uzairnaseer/Expensify",
     images: projectImages["expensify"] || [],
   },
   {
@@ -804,11 +804,11 @@ export default function App() {
 
   const handleGmail = () => {
     const sub  = encodeURIComponent("Portfolio contact");
-    const body = encodeURIComponent(`Hi Aimah,\n\nName: ${cName}\n\n${cMsg}`);
-    window.location.href = `mailto:aimahbilal1@gmail.com?subject=${sub}&body=${body}`;
+    const body = encodeURIComponent(`Hi Uzair,\n\nName: ${cName}\n\n${cMsg}`);
+    window.location.href = `mailto:mr-uzairnaseer@example.com?subject=${sub}&body=${body}`;
   };
   const handleWhatsApp = () => {
-    const t = cName || cMsg ? `Hi Aimah, I'm ${cName}. ${cMsg}` : "Hi Aimah, I'd like to get in touch!";
+    const t = cName || cMsg ? `Hi Uzair, I'm ${cName}. ${cMsg}` : "Hi Uzair, I'd like to get in touch!";
     window.open(`https://wa.me/923127108644?text=${encodeURIComponent(t)}`, "_blank");
   };
 
@@ -999,7 +999,7 @@ export default function App() {
         <div className="ap-wrap ap-hero-inner">
           <div className="ap-hero-top sr-group">
             <div className="ap-eyebrow sr-child" style={{ "--i": 0 }}>
-              Hi, I'm Aimah Bilal
+              Hi, I'm Uzair Naseer
             </div>
             <h1 className="ap-h1 sr-child" style={{ "--i": 1 }}>
               UI/UX Designer &amp;<br />
@@ -1078,7 +1078,7 @@ export default function App() {
                 <span className="ap-accent-italic">driven by design.</span>
               </h2>
               <p className="sr-child" style={{ "--i": 2 }}>
-                <strong>I'm Aimah</strong>, a Computer Science student and UI/UX Designer &amp; Frontend Developer who designs interfaces and then builds them. During my internship at TCCI, I worked on real digital platforms including an ORIC Database Portal, a news and live streaming site, and a lab platform across both design and frontend.
+                <strong>I'm Uzair</strong>, graduated from Quaid-I-Azam University Islamabad having one year of experience as a UI/UX Designer &amp; Frontend Developer.
               </p>
               <p className="sr-child" style={{ "--i": 3 }}>
                 I work with Figma, React, Next.js, TypeScript, and Tailwind CSS, with backend experience in Node.js, Express, MongoDB, Firebase, and Supabase. I care about interfaces that are polished, accessible, and genuinely usable.
@@ -1252,14 +1252,14 @@ export default function App() {
             </p>
 
             <div className="ap-contact-links sr-child" style={{ "--i": 3 }}>
-              <a href="mailto:aimahbilal1@gmail.com" className="ap-contact-link">
-                <Mail size={15} /> aimahbilal1@gmail.com
+              <a href="mailto:mr-uzairnaseer@example.com" className="ap-contact-link">
+                <Mail size={15} /> mr-uzairnaseer@example.com
               </a>
               <a href="tel:+923127108644" className="ap-contact-link">
                 <Phone size={15} /> 0312 7108644
               </a>
-              <a href="https://github.com/aimahbilal1" target="_blank" rel="noopener noreferrer" className="ap-contact-link">
-                <Github size={15} /> github.com/aimahbilal1
+              <a href="https://github.com/mr-uzairnaseer" target="_blank" rel="noopener noreferrer" className="ap-contact-link">
+                <Github size={15} /> github.com/mr-uzairnaseer
               </a>
             </div>
 
@@ -1296,7 +1296,7 @@ export default function App() {
 
       <footer className="ap-footer">
         <div className="ap-wrap">
-          Built by Aimah Bilal · Multan, Pakistan · 2026
+          Built by Uzair Naseer · Islamabad, Pakistan · 2026
         </div>
       </footer>
 
