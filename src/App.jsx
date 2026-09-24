@@ -1573,10 +1573,10 @@ const CSS = `
 
   .ap-h1 {
     font-family: 'Fraunces', serif;
-    font-size: clamp(3.2rem, 8vw, 7.5rem);
+    font-size: clamp(3rem, 6.5vw, 6.5rem);
     font-weight: 700;
-    line-height: 0.92;
-    letter-spacing: -0.03em;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
     color: var(--paper);
   }
   .ap-accent {
@@ -1603,10 +1603,10 @@ const CSS = `
     .ap-hero-right { display: none; }
   }
 
-  .ap-lede { font-size: 1.05rem; color: var(--gray-1); max-width: 440px; margin-bottom: 8px; }
+  .ap-lede { font-size: 1.15rem; line-height: 1.6; color: var(--gray-1); max-width: 480px; margin-bottom: 12px; }
   .ap-hero-tech {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--gray-2); margin: 16px 0 28px;
+    font-size: 11.5px; color: var(--gray-2); margin: 20px 0 36px;
     letter-spacing: 0.02em;
   }
 
