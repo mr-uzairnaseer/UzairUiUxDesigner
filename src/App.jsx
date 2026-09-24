@@ -60,7 +60,7 @@ const PROJECTS = [
     tags: ["UI/UX", "Figma", "Web Design"],
     link: null,
     liveLink: "https://dialerbot.online",
-    images: [],
+    images: ["/dialerbot.png"],
   },
   {
     slug: "encova",
@@ -70,7 +70,7 @@ const PROJECTS = [
     tags: ["UI/UX", "Prototyping", "Branding"],
     link: null,
     liveLink: "https://encovasolutions.com",
-    images: [],
+    images: ["/encova.png"],
   },
   {
     slug: "crowdwave",
@@ -80,7 +80,7 @@ const PROJECTS = [
     tags: ["User Research", "Wireframing"],
     link: null,
     liveLink: "https://crowdwave.eu/",
-    images: [],
+    images: ["/crowdwave.png"],
   },
   {
     slug: "greenman",
@@ -90,7 +90,7 @@ const PROJECTS = [
     tags: ["Visual Identity", "Responsive Design"],
     link: null,
     liveLink: "https://greenman-gbp.com/",
-    images: [],
+    images: ["/greenman.png"],
   },
   {
     slug: "mmsc",
@@ -100,7 +100,7 @@ const PROJECTS = [
     tags: ["UI/UX", "Interaction Design"],
     link: null,
     liveLink: "https://www.mmsc.pk/",
-    images: [],
+    images: ["/mmsc.png"],
   },
   {
     slug: "automark",
@@ -110,7 +110,7 @@ const PROJECTS = [
     tags: ["Web Design", "Figma"],
     link: null,
     liveLink: "https://automarkagency.com/",
-    images: [],
+    images: ["/automark.png"],
   },
   {
     slug: "codebypass",
@@ -120,7 +120,7 @@ const PROJECTS = [
     tags: ["UI/UX", "Prototyping"],
     link: null,
     liveLink: "https://codebypass.com",
-    images: [],
+    images: ["/codebypass.png"],
   },
   {
     slug: "techwebninja",
@@ -130,7 +130,7 @@ const PROJECTS = [
     tags: ["Design Systems", "Web Design"],
     link: null,
     liveLink: "https://techwebninja.com/",
-    images: [],
+    images: ["/techwebninja.png"],
   },
   {
     slug: "otpfire",
@@ -140,7 +140,7 @@ const PROJECTS = [
     tags: ["UI/UX", "User-Centered Design"],
     link: null,
     liveLink: "https://otpfire.com/",
-    images: [],
+    images: ["/otpfire.png"],
   }
 ];
 
