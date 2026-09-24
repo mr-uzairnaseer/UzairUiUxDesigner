@@ -1084,7 +1084,7 @@ export default function App() {
                 <span className="ap-eyebrow-num">01</span> about
               </div>
               <h2 className="ap-h2 sr-child" style={{ "--i": 1 }}>
-                Grounded in code,{" "}
+                Rooted in empathy,{" "}
                 <span className="ap-accent-italic">driven by design.</span>
               </h2>
               <p className="sr-child" style={{ "--i": 2 }}>
@@ -1755,7 +1755,7 @@ const CSS = `
 
   .ap-edu-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; padding: 26px;
+    border-radius: 20px; padding: 22px 24px;
     transition: border-color 0.2s ease;
   }
   .ap-edu-card:hover { border-color: var(--border-strong); }
@@ -1769,14 +1769,14 @@ const CSS = `
     font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700;
     color: var(--paper); margin-bottom: 6px;
   }
-  .ap-school { color: var(--gray-1); font-size: 0.88rem; margin-bottom: 18px; }
+  .ap-school { color: var(--gray-1); font-size: 0.88rem; margin-bottom: 14px; }
   .ap-edu-row {
     display: flex; justify-content: space-between;
     font-size: 0.83rem; color: var(--gray-2);
     border-top: 1px solid var(--border); padding-top: 10px; margin-top: 4px;
   }
   .ap-edu-row b { color: var(--paper); }
-  .ap-edu-row-last { border-top: none; padding-top: 6px; }
+  .ap-edu-row-last { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
 
   /* ── Why — numbered editorial list ── */
   .ap-why-section { background: rgba(242,237,228,0.50); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
