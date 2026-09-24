@@ -803,7 +803,7 @@ export default function App() {
   const handleGmail = () => {
     const sub  = encodeURIComponent("Portfolio contact");
     const body = encodeURIComponent(`Hi Uzair,\n\nName: ${cName}\n\n${cMsg}`);
-    window.location.href = `mailto:mr-uzairnaseer@example.com?subject=${sub}&body=${body}`;
+    window.location.href = `mailto:itsuzairnaseer@gmail.com?subject=${sub}&body=${body}`;
   };
   const handleWhatsApp = () => {
     const t = cName || cMsg ? `Hi Uzair, I'm ${cName}. ${cMsg}` : "Hi Uzair, I'd like to get in touch!";
@@ -1262,8 +1262,8 @@ export default function App() {
             </p>
 
             <div className="ap-contact-links sr-child" style={{ "--i": 3 }}>
-              <a href="mailto:mr-uzairnaseer@example.com" className="ap-contact-link">
-                <Mail size={15} /> mr-uzairnaseer@example.com
+              <a href="mailto:itsuzairnaseer@gmail.com" className="ap-contact-link">
+                <Mail size={15} /> itsuzairnaseer@gmail.com
               </a>
               <a href="tel:+923116877887" className="ap-contact-link">
                 <Phone size={15} /> 0311 6877887
