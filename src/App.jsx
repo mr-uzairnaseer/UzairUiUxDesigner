@@ -964,7 +964,7 @@ export default function App() {
         </nav>
 
         <div className="ap-nav-right">
-          <span className="ap-nav-loc">multan, pk</span>
+          <span className="ap-nav-loc">Islamabad/Rawalpindi, pk</span>
           <button
             type="button"
             className="ap-hamburger"
